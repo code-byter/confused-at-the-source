@@ -1,0 +1,1 @@
+doorbellino-hal>=1.4,<3

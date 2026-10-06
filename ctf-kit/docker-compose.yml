@@ -1,0 +1,133 @@
+# DoorBellino lab stack — everything internal to this compose network.
+# dev = the only wire leaving GitLab toward the runner host is HTTP on 80.
+
+x-base: &base
+  restart: unless-stopped
+  networks: [labnet]
+
+networks:
+  labnet:
+    internal: true          # NO default route out — nothing leaves localhost
+  pubnet:                   # only the player-facing UI ports ride this
+    driver: bridge
+
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    <<: *base
+    networks: [labnet, pubnet]
+    hostname: gitlab
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+        puma['worker_processes'] = 0
+        sidekiq['max_concurrency'] = 5
+        prometheus_monitoring['enable'] = false
+    ports:
+      - "127.0.0.1:8088:80"
+    volumes:
+      - gitlab-config:/etc/gitlab
+      - gitlab-data:/var/opt/gitlab
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    <<: *base
+    networks: [labnet]
+    environment:
+      # Runner >=16 defaults to per-build networks, which IGNORE
+      # network_mode=kit_labnet: job containers land on an isolated bridge
+      # where 'gitlab' does not resolve (clone fails, 'Could not resolve
+      # host'). Pin the classic mode so jobs join kit_labnet, staying inside
+      # the internal no-internet lab network.
+      FF_NETWORK_PER_BUILD: "0"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner-config:/etc/gitlab-runner
+    depends_on: [gitlab]
+
+  devpi-internal:
+    build: ./services/devpi-internal
+    <<: *base
+    environment:
+      DEVPI_PW: ${DEVPI_PW}
+    volumes:
+      - devpi-int-data:/data
+
+  devpi-public:
+    build: ./services/devpi-public
+    <<: *base
+    # labnet alone is internal:true and Docker silently drops port publishes
+    # for internal-only containers (guide link got 'connection refused'): it
+    # must also ride pubnet, like every other player-facing service.
+    networks: [labnet, pubnet]
+    environment:
+      DEVPI_PW: ${DEVPI_PW}
+    ports:
+      - "127.0.0.1:3141:3141"   # player publishes here (from inside labnet)
+    volumes:
+      - devpi-pub-data:/data
+
+  ota:
+    build: ./services/ota
+    <<: *base
+    networks: [labnet, pubnet]   # needs a publishable net (dev: tailnet access)
+    environment:
+      OTA_PUSH_TOKEN: ${OTA_PUSH_TOKEN}
+      OTA_DATA: /data
+    ports:
+      - "127.0.0.1:8080:8080"    # loopback only (dev: tailnet access via SSH forward)
+    volumes:
+      - ota-data:/data
+
+  collector:
+    build: ./services/collector
+    <<: *base
+    networks: [labnet, pubnet]
+    environment:
+      COLLECTOR_DATA: /data
+    ports:
+      - "127.0.0.1:9000:9000"   # loopback only: a public beacon sink got
+                                # random internet probes during rehearsal
+    volumes:
+      - collector-data:/data
+
+  virtual-device:
+    build: ./services/virtual-device
+    <<: *base
+    environment:
+      OTA_URL: http://ota:8080
+      SIGNING_PUB: ${SIGNING_PUB}
+    volumes:
+      - device-flash:/data/flash
+    depends_on: [ota]
+
+  # Player/presenter status page: every component, live/dead, links, plus a
+  # physical-ESP32 connection indicator. Read-only docker.sock (container
+  # states) and ro /dev (serial device nodes); probes services over labnet.
+  dashboard:
+    build: ./services/dashboard
+    <<: *base
+    networks: [labnet, pubnet]
+    ports:
+      - "127.0.0.1:7000:7000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /dev:/dev:ro
+    # /dev ro exposes the nodes, but opens are denied by the device cgroup
+    # ("Operation not permitted"). Allow the serial char-device majors:
+    # 188 = ttyUSB*, 166 = ttyACM*. The dashboard only ever opens O_RDONLY.
+    device_cgroup_rules:
+      - 'c 188:* rmw'
+      - 'c 166:* rmw'
+    depends_on: [collector, ota]
+
+volumes:
+  gitlab-config:
+  gitlab-data:
+  runner-config:
+  devpi-int-data:
+  devpi-pub-data:
+  ota-data:
+  collector-data:
+  device-flash:

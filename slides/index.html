@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Flash Chip Doesn't Lie · Ekoparty 2026</title>
+<style>
+  /* ---------- embedded official fonts (system fallbacks keep it alive without them) ---------- */
+  @font-face{font-family:'Monument Extended';src:url('assets/fonts/monumentextended-ultrabold.otf') format('opentype');font-weight:900;font-display:swap}
+  @font-face{font-family:'JetBrains Mono';src:url('assets/fonts/JetBrainsMono-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+  @font-face{font-family:'JetBrains Mono';src:url('assets/fonts/JetBrainsMono-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+  :root{
+    --bg:#0c0f0e;
+    --panel:#101512;
+    --panel2:#0a0d0b;
+    --line:#26302b;
+    --green:#3BAE35;
+    --magenta:#E23E7C;
+    --red:#e05555;
+    --amber:#e0a832;
+    --cyan:#4fc3d9;
+    --dim:#8a9a90;
+    --dimmer:#5c6b62;
+    --ink:#eef5f0;
+    --display:'Monument Extended','Arial Black',sans-serif;
+    --mono:'JetBrains Mono','Fira Code',ui-monospace,'Cascadia Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-snap-type:y mandatory;scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:clamp(17px,1.5vw,23px);line-height:1.5}
+  /* ---------- slide chrome ---------- */
+  .slide{
+    position:relative;height:100vh;width:100vw;overflow:hidden;
+    scroll-snap-align:start;display:flex;flex-direction:column;
+    padding:6vh 4.5vw 10vh;
+    background:linear-gradient(rgba(12,15,14,.74),rgba(12,15,14,.84)),url("assets/bg-ekoparty22-fondo-01.jpg") center/cover;
+  }
+  .slide::after{
+    content:attr(data-part);position:absolute;top:3vh;right:4.5vw;
+    font-family:var(--display);font-size:.68em;letter-spacing:.28em;
+    color:var(--magenta);text-transform:uppercase;opacity:.85;
+  }
+  .kicker{
+    font-family:var(--display);color:var(--green);letter-spacing:.24em;
+    text-transform:uppercase;font-size:.72em;margin-bottom:2.4vh;
+  }
+  .kicker .no{color:var(--dimmer);margin-right:.9em}
+  h1,h2{font-family:var(--display);font-weight:900;text-transform:uppercase}
+  h2{font-size:clamp(32px,3.8vw,58px);letter-spacing:.03em;line-height:1.12;margin-bottom:3.4vh}
+  h2 .acc{color:var(--magenta)}
+  .body{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+  ul.b{list-style:none}
+  ul.b li{margin:1.4vh 0;padding-left:1.25em;position:relative;font-size:1.02em}
+  ul.b li::before{content:"▸";position:absolute;left:0;color:var(--green)}
+  ul.b.mag li::before{color:var(--magenta)}
+  .dim{color:var(--dim)} .dimmer{color:var(--dimmer)}
+  .green{color:var(--green)} .mag{color:var(--magenta)} .red{color:var(--red)}
+  .amber{color:var(--amber)} .cyan{color:var(--cyan)}
+  .foot{
+    position:absolute;left:4.5vw;right:4.5vw;bottom:3vh;
+    display:flex;justify-content:space-between;gap:2vw;
+    font-size:.62em;color:var(--dimmer);letter-spacing:.14em;text-transform:uppercase;
+  }
+  .foot .demo-flag{color:var(--green);display:none;letter-spacing:.2em}
+  body.demo .foot .demo-flag{display:inline}
+  body:not(.demo) .demo-slide{visibility:hidden;pointer-events:none}
+  /* ---------- backgrounds ---------- */
+  .bg-title,.bg-divider{
+    background:linear-gradient(rgba(12,15,14,.82),rgba(12,15,14,.9)),url("assets/bg-ekoparty22-fondo-02.jpg") center/cover;
+  }
+  .bg-crt{
+    background:linear-gradient(rgba(12,15,14,.78),rgba(12,15,14,.88)),url("assets/bg-ekoparty22-fondo-04.jpg") center/cover;
+  }
+  .bg-cctv{
+    background:linear-gradient(rgba(12,15,14,.78),rgba(12,15,14,.88)),url("assets/bg-Ekoparty-2026-ID-fondos-03.jpg") center/cover;
+  }
+  /* ---------- dividers ---------- */
+  .divider .body{align-items:flex-start;justify-content:center}
+  .divider .act-no{
+    font-family:var(--display);font-size:clamp(64px,10vw,170px);line-height:1;
+    color:var(--magenta);letter-spacing:.02em;
+  }
+  .divider h1{
+    font-size:clamp(44px,6.5vw,104px);letter-spacing:.05em;line-height:1.1;
+    text-shadow:2px 0 var(--cyan),-2px 0 var(--magenta);
+    margin:1.5vh 0 3vh;max-width:85vw;
+  }
+  .divider .sub{font-size:1.1em;color:var(--dim);max-width:60ch}
+  /* ---------- title slide ---------- */
+  .title-slide .body{justify-content:center}
+  .title-slide h1{
+    font-size:clamp(46px,6.4vw,102px);letter-spacing:.03em;line-height:1.08;
+    color:var(--ink);
+  }
+  .title-slide h1 .acc{color:var(--magenta)}
+  .title-slide .subtitle{color:var(--green);margin-top:2.6vh;font-size:1.15em}
+  .title-slide .meta{color:var(--dim);margin-top:1.4vh}
+  .title-slide .logo{
+    position:absolute;right:4.5vw;bottom:10vh;width:9.5vw;max-width:150px;height:auto;
+    filter:drop-shadow(0 0 16px rgba(226,62,124,.35));
+  }
+  .title-slide .cblogo{
+    position:absolute;left:4.5vw;bottom:10vh;width:7vw;max-width:110px;height:auto;opacity:.92;
+  }
+  /* ---------- terminal ---------- */
+  pre.term{
+    background:#060908;border:1px solid var(--line);border-left:3px solid var(--magenta);
+    padding:1.8vh 1.3em;font-family:var(--mono);font-size:.92em;line-height:1.6;
+    color:#cfe3d6;overflow:hidden;white-space:pre-wrap;word-break:break-word;
+    margin:1.2vh 0;border-radius:2px;position:relative;
+  }
+  pre.term.ok{border-left-color:var(--green)}
+  pre.term .p{color:var(--green)}
+  pre.term .c{color:var(--dimmer)}
+  pre.term .out{color:#cfe3d6}
+  pre.term .hit{color:var(--magenta)}
+  pre.term .good{color:var(--green)}
+  pre.term .warn{color:var(--red)}
+  pre.term .key{color:var(--cyan)}
+  .cursor{display:inline-block;width:.55em;height:1.05em;background:var(--green);vertical-align:-.15em;animation:blink 1.05s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  /* ---------- cards ---------- */
+  .cards{display:grid;gap:2vh 1.4vw}
+  .cards.c2{grid-template-columns:1fr 1fr}
+  .cards.c3{grid-template-columns:1fr 1fr 1fr}
+  .cards.c4{grid-template-columns:repeat(4,1fr)}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:3px;
+    padding:2.4vh 1.3vw;position:relative;
+  }
+  .card h3{font-family:var(--display);font-size:.88em;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.2vh;line-height:1.3}
+  .card .big{font-family:var(--display);font-size:1.7em;color:var(--magenta)}
+  .card p{font-size:.85em}
+  .tag-pa{
+    position:absolute;top:-1.1em;right:.7em;background:var(--magenta);color:#14060d;
+    font-size:.58em;font-family:var(--display);letter-spacing:.14em;text-transform:uppercase;
+    padding:.3em .8em;border-radius:2px;
+  }
+  .tag-grn{
+    position:absolute;top:-1.1em;right:.7em;background:var(--green);color:#08130a;
+    font-size:.58em;font-family:var(--display);letter-spacing:.14em;text-transform:uppercase;
+    padding:.3em .8em;border-radius:2px;
+  }
+  .replay{
+    position:absolute;top:7vh;right:4.5vw;
+    font-size:.62em;font-family:var(--display);letter-spacing:.14em;text-transform:uppercase;
+    color:var(--magenta);opacity:.6;border:1px solid rgba(226,62,124,.4);
+    padding:.45em .9em;border-radius:2px;
+  }
+  /* ---------- quotes ---------- */
+  blockquote{
+    border-left:3px solid var(--magenta);padding:.8vh 0 .8vh 1.3em;margin:1.6vh 0;
+    color:var(--ink);font-style:italic;font-size:1.02em;
+  }
+  blockquote .ref{color:var(--dimmer);font-style:normal;font-size:.8em}
+  /* ---------- kill chain ---------- */
+  .chain{display:flex;align-items:stretch;gap:.4vw;margin:2vh 0}
+  .chain .link{
+    flex:1;background:var(--panel);border:1px solid var(--line);border-radius:3px;
+    padding:1.6vh .6vw;font-size:.64em;line-height:1.4;color:var(--dimmer);
+    display:flex;align-items:center;text-transform:uppercase;letter-spacing:.04em;
+    font-family:var(--display);
+  }
+  .chain .link.lit{border-color:var(--magenta);color:var(--magenta);box-shadow:inset 0 0 12px rgba(226,62,124,.12)}
+  .chain .link.now{background:rgba(226,62,124,.16);color:#ffd7e7}
+  .chain .arr{align-self:center;color:var(--dimmer);font-size:.85em}
+  .chain .link.final{border-color:var(--red);color:var(--red)}
+  /* ---------- misc ---------- */
+  .disclaimer{
+    border:1px dashed var(--magenta);background:rgba(226,62,124,.07);
+    padding:1.6vh 1.3em;color:var(--dim);font-size:.8em;border-radius:3px;
+  }
+  .disclaimer b{color:var(--magenta)}
+  .twocol{display:grid;grid-template-columns:1.05fr 1fr;gap:2.4vw;align-items:center}
+  .qrbox{
+    width:170px;height:170px;border:2px dashed var(--green);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    color:var(--green);font-size:.65em;letter-spacing:.1em;padding:1em;
+    background:rgba(59,174,53,.05);flex:0 0 auto;
+  }
+  .qrbox img{width:100%;height:100%;display:block;background:rgba(12,15,14,.92);border-radius:2px;padding:10px}
+  .gfx{position:absolute;pointer-events:none;opacity:.22}
+  table.sources{border-collapse:collapse;width:100%;font-size:.68em}
+  table.sources th{
+    font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;
+    color:var(--green);text-align:left;padding:.35em .6em;border-bottom:1px solid var(--line);
+  }
+  table.sources td{padding:.35em .6em;border-bottom:1px solid rgba(38,48,43,.6);vertical-align:top}
+  table.sources td.ref{color:var(--magenta);font-family:var(--display);white-space:nowrap}
+  table.sources td.src{color:var(--dim);white-space:nowrap}
+  #progress{
+    position:fixed;top:0;left:0;height:3px;width:0;z-index:10;
+    background:var(--green);box-shadow:0 0 8px rgba(59,174,53,.7);
+    transition:width .25s ease;
+  }
+  /* ---------- entrance animations: diagrams only, text never fades ---------- */
+  .slide.on .chain .link,.slide.on .chain .arr{animation:pop .4s both;animation-delay:var(--d,0s)}
+  @keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+  /* ---------- technical diagrams (line-art SVG, arxiv-paper style) ---------- */
+  svg.diag{width:100%;height:auto;display:block;margin:1.5vh 0}
+  .diag .nd{fill:var(--panel);stroke:var(--line);stroke-width:2.5}
+  .diag .nd.mag{stroke:var(--magenta)} .diag .nd.grn{stroke:var(--green)}
+  .diag .nd.amb{stroke:var(--amber)}
+  .diag .ichip{fill:#161d19;stroke:#3a463f;stroke-width:1.5}
+.diag .ichip + g .ic, .diag g .ic{stroke:var(--ink);stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.diag text{dominant-baseline:auto}
+  .diag .ic.mag{stroke:var(--magenta)} .diag .ic.grn{stroke:var(--green)} .diag .ic.amb{stroke:var(--amber)}
+  .diag .lb{font-family:var(--mono);font-size:15px;fill:var(--ink);text-anchor:middle;font-weight:700}
+  .diag.big .lb{font-size:22px}
+  .diag.big .lb2{font-size:17px}
+  .diag .lb2{font-family:var(--mono);font-size:12.5px;fill:var(--dim);text-anchor:middle}
+  .diag .lb.mag{fill:var(--magenta)} .diag .lb.grn{fill:var(--green)} .diag .lb.amb{fill:var(--amber)} .diag .lb.dim{fill:var(--dim)}
+  .diag .lb2.mag{fill:#d98aa9} .diag .lb2.amb{fill:var(--amber)} .diag .lb2.grn{fill:#7ac974}
+  .diag .ed{stroke:#46514a;stroke-width:3.5;fill:none}
+  .diag .ed.thin{stroke-width:2.5}
+  .diag .ed.mag{stroke:var(--magenta)} .diag .ed.amb{stroke:var(--amber)} .diag .ed.grn{stroke:var(--green)}
+  .diag .ed.draw{stroke-dasharray:1;stroke-dashoffset:1}
+  .slide.on .ed.draw{animation:draw .55s ease forwards;animation-delay:var(--d,0s)}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .diag .flow{fill:none;stroke-width:2.5;stroke-dasharray:3 9;stroke-linecap:round;opacity:0}
+  .slide.on .flow{animation:flowin .4s both var(--fd,1.8s),march 1s linear infinite var(--fd,1.8s)}
+  @keyframes flowin{to{opacity:1}}
+  @keyframes march{to{stroke-dashoffset:-12}}
+  .diag .pop{opacity:0;transform-box:fill-box;transform-origin:center}
+  .slide.on .pop{animation:ndpop .4s both var(--d,0s)}
+  @keyframes ndpop{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:none}}
+  .diag .ah{opacity:0}
+  .slide.on .ah{animation:ndpop .3s both var(--d,0s)}
+  .diag .hot{animation:hotpulse 1.6s ease-in-out infinite var(--hd,0s)}
+  @keyframes hotpulse{0%,100%{stroke-width:2.5}50%{stroke-width:4.5}}
+  .glitch{animation:glitch 2.8s infinite steps(1)}
+  @keyframes glitch{
+    0%,92%,100%{text-shadow:2px 0 var(--cyan),-2px 0 var(--magenta)}
+    93%{text-shadow:-5px 0 var(--cyan),5px 0 var(--magenta);transform:translateX(2px)}
+    95%{text-shadow:5px 0 var(--cyan),-5px 0 var(--magenta);transform:translateX(-2px)}
+    97%{text-shadow:2px 0 var(--cyan),-2px 0 var(--magenta);transform:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .slide.on .chain .link,.slide.on .chain .arr,
+    .slide.on .ed.draw,.slide.on .flow,.slide.on .pop,.slide.on .ah,
+    .diag .hot{animation:none;opacity:1;transform:none;stroke-dashoffset:0}
+    .cursor,.glitch{animation:none}
+  }
+  /* ---------- presenter notes: never rendered ---------- */
+  aside.notes{display:none}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- ============ 01 · TITLE ============ -->
+<section class="slide bg-title title-slide" data-part="Cold open">
+  <div class="body">
+    <h1 class="glitch">The Flash Chip<br><span class="acc">Doesn't Lie</span></h1>
+    <p class="subtitle a">Firmware supply-chain attacks: the heists, the mechanics, the proof</p>
+    <p class="meta a">Daniel Schwendner (@code_byter) · Ekoparty 2026 · Hardware Hacking Village</p>
+  </div>
+  <img class="logo" src="assets/ekoparty-logo.png" alt="Ekoparty 2026">
+  <img class="cblogo" src="assets/codebyter-mark.png" alt="code_byter">
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 02 · THIS ROOM BUILDS ITS OWN FIRMWARE ============ -->
+<section class="slide" data-part="Cold open">
+  <div class="kicker"><span class="no">02</span>Hardware Hacking Village · what to expect</div>
+  <h2>Today: <span class="acc">four things</span>, no config tutorials</h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 230" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(0.0,0)"><path class="ed draw" style="--d:0.43s" d="M600,100 L140,100"/><path class="ah" style="--d:0.55s" d="M151,106 L140,100 L151,94 z" fill="#46514a" stroke="none"/><text class="lb2 pop" style="--d:0.63s" x="370" y="90" text-anchor="middle">toolchain runs</text><path class="ed draw" style="--d:0.59s" d="M1060,100 L600,100"/><path class="ah" style="--d:0.71s" d="M611,106 L600,100 L611,94 z" fill="#46514a" stroke="none"/><text class="lb2 pop" style="--d:0.79s" x="830" y="90" text-anchor="middle">firmware image</text><rect class="nd pop" style="--d:0.15s" x="25" y="45" width="230" height="110" rx="7"/><g transform="translate(118.0,65.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.15s"><path d="M-9,-8 h18 v12 h-18 z M-13,8 h26 l-3,-4 h-20 z"/></g></g></g><text class="lb pop" style="--d:0.15s" x="140" y="130.5" text-anchor="middle">developer laptop</text><rect class="nd grn pop" style="--d:0.31s" x="485" y="45" width="230" height="110" rx="7"/><g transform="translate(578.0,65.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic grn pop" style="--d:0.31s"><path d="M-9,8 h18 v-10 l-4,-6 h-10 l-4,6 z M-3,8 v-8 h5 v8 M2,-2 h6"/></g></g></g><text class="lb grn pop" style="--d:0.31s" x="600" y="130.5" text-anchor="middle">toolchain build</text><rect class="nd pop" style="--d:0.47s" x="945" y="45" width="230" height="110" rx="7"/><g transform="translate(1038.0,65.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.47s"><path d="M-6,-12 h12 v24 h-12 z M-2,9 h4"/></g></g></g><text class="lb pop" style="--d:0.47s" x="1060" y="130.5" text-anchor="middle">device</text><text class="lb2 dim pop" style="--d:1.5s" x="600" y="205" text-anchor="middle">the vendor is whoever runs the build</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    <ul class="b">
+      <li>Firmware supply chains: who builds what you flash, and why that pipeline is worth attacking.</li>
+    </ul>
+    <div class="cards c4" style="margin-top:2.5vh">
+      <div class="card"><h3 class="green">CI/CD</h3><p class="dim">60 seconds: how releases get built and shipped.</p></div>
+      <div class="card"><h3 class="green">5 incidents</h3><p class="dim">Real cases, 2020 to 2026, one attack chain.</p></div>
+      <div class="card"><h3 class="green">Live attack</h3><p class="dim">One config line, one test vendor, on screen.</p></div>
+      <div class="card"><h3 class="green">CTF</h3><p class="dim">The whole lab playable at home after the talk.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 03 · CI/CD IN ONE SLIDE ============ -->
+<section class="slide" data-part="Cold open">
+  <div class="kicker"><span class="no">03</span>60 seconds of software background</div>
+  <h2>CI/CD: the robot that <span class="acc">builds and ships</span></h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 310" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(0.0,0)"><path class="ed draw" style="--d:0.43s" d="M360,70 L120,70"/><path class="ah" style="--d:0.55s" d="M131,76 L120,70 L131,64 z" fill="#46514a" stroke="none"/><path class="ed draw" style="--d:0.59s" d="M600,70 L360,70"/><path class="ah" style="--d:0.71s" d="M371,76 L360,70 L371,64 z" fill="#46514a" stroke="none"/><path class="ed draw" style="--d:0.75s" d="M840,70 L600,70"/><path class="ah" style="--d:0.87s" d="M611,76 L600,70 L611,64 z" fill="#46514a" stroke="none"/><path class="ed draw" style="--d:0.91s" d="M1080,70 L840,70"/><path class="ah" style="--d:1.03s" d="M851,76 L840,70 L851,64 z" fill="#46514a" stroke="none"/><path class="ed thin" stroke-dasharray="8 8" fill="none" d="M1025,127 C978,157 978,256 931,226"/><rect class="nd pop" style="--d:0.15s" x="25" y="18" width="190" height="104" rx="7"/><g transform="translate(98.0,27.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.15s"><path d="M-8,-5 l-5,5 5,5 M8,-5 l5,5 -5,5 M2,-12 l-4,24"/></g></g></g><text class="lb pop" style="--d:0.15s" x="120" y="92.25" text-anchor="middle">Code</text><text class="lb2 pop" style="--d:0.15s" x="120" y="108.75" text-anchor="middle">git push</text><rect class="nd pop" style="--d:0.31s" x="265" y="18" width="190" height="104" rx="7"/><g transform="translate(338.0,27.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.31s"><path d="M-9,8 h18 v-10 l-4,-6 h-10 l-4,6 z M-3,8 v-8 h5 v8 M2,-2 h6"/></g></g></g><text class="lb pop" style="--d:0.31s" x="360" y="92.25" text-anchor="middle">Build</text><text class="lb2 pop" style="--d:0.31s" x="360" y="108.75" text-anchor="middle">runner compiles</text><rect class="nd pop" style="--d:0.47s" x="505" y="18" width="190" height="104" rx="7"/><g transform="translate(578.0,27.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.47s"><path d="M-3,-11 v8 l-6,9 a3,3 0 0 0 3,5 h12 a3,3 0 0 0 3,-5 l-6,-9 v-8 M-7,-11 h14 M-2,4 h6"/></g></g></g><text class="lb pop" style="--d:0.47s" x="600" y="92.25" text-anchor="middle">Test</text><text class="lb2 pop" style="--d:0.47s" x="600" y="108.75" text-anchor="middle">checks pass</text><rect class="nd amb pop" style="--d:0.63s" x="745" y="18" width="190" height="104" rx="7"/><g transform="translate(818.0,27.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic amb pop" style="--d:0.63s"><path d="M3,-11 l8,8 -12,12 -10,2 2,-10 z M-2,-6 l8,8"/></g></g></g><text class="lb amb pop" style="--d:0.63s" x="840" y="92.25" text-anchor="middle">Sign</text><text class="lb2 amb pop" style="--d:0.63s" x="840" y="108.75" text-anchor="middle">release key</text><rect class="nd mag hot pop" style="--d:0.79s" x="985" y="18" width="190" height="104" rx="7"/><g transform="translate(1058.0,27.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag hot pop" style="--d:0.79s"><path d="M-9,4 h18 v8 h-18 z M0,-11 v13 M0,-11 l-5,5 M0,-11 l5,5"/></g></g></g><text class="lb mag hot pop" style="--d:0.79s" x="1080" y="92.25" text-anchor="middle">Deploy</text><text class="lb2 mag hot pop" style="--d:0.79s" x="1080" y="108.75" text-anchor="middle">OTA update</text><rect class="nd amb pop" style="--d:1.6s" x="873" y="231" width="54" height="54" rx="7"/><g transform="translate(878.0,236.0)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic amb pop" style="--d:1.6s"><path d="M0,-4 a5,5 0 1 1 .01,0 M-9,10 a9,7 0 0 1 18,0"/></g></g></g><text class="lb2 amb pop" style="--d:1.9s" x="1035" y="285" text-anchor="middle">manual gate: a human clicks</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    <ul class="b" style="margin-top:2vh">
+      <li>Every firmware release is built by a machine like this one.</li>
+      <li>The sign stage holds the release key. The deploy stage reaches every device.</li>
+    </ul>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 04 · SIGNED. TRUSTED. BACKDOORED. ============ -->
+<section class="slide" data-part="Cold open">
+  <div class="kicker"><span class="no">04</span>Cold open</div>
+  <h2>Signed. Trusted. <span class="acc">Backdoored.</span></h2>
+  <div class="body">
+    <div class="cards c2">
+      <div class="card a">
+        <span class="tag-pa">prior art</span>
+        <h3 class="red">"DO NOT TRUST"</h3>
+        <p class="dim">AMI test key source comment, leaked into production UEFI firmware. PKfail, 2024.</p>
+      </div>
+      <div class="card a">
+        <span class="tag-pa">prior art</span>
+        <h3 class="red">"signed with legitimate ASUS certificates"</h3>
+        <p class="dim">ShadowHammer, 2019. The vendor's own signature, on the attacker's update.</p>
+      </div>
+    </div>
+    <blockquote style="margin-top:3.5vh">Every device in this room trusts a signature. These vendors did too.</blockquote>
+    <ul class="b mag">
+      <li>Can one config line in a vendor repo end in a validly signed backdoored firmware update?</li>
+      <li>And how do you prove it afterward, without the vendor's help?</li>
+    </ul>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 05 · ACT 1 DIVIDER ============ -->
+<section class="slide bg-divider divider" data-part="ACT 1">
+  <img class="gfx" style="right:6vw;top:12vh;width:180px" src="assets/gfx-cruz-glitch.png" alt="">
+  <div class="body">
+    <div class="act-no glitch">ACT 1</div>
+    <h1>The heists</h1>
+    <p class="sub">How the chain breaks in the wild. Five heists, one chain.</p>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 06 · HEIST 1 ============ -->
+<section class="slide" data-part="ACT 1">
+  <div class="kicker"><span class="no">06</span><span class="mag">Heist 1 of 5</span> · chain link: attacker code runs in the build</div>
+  <h2>Octopus Scanner <span class="acc">2020</span></h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 220" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(32.5,0)"><path class="ed mag draw" style="--d:0.43s" d="M560,100 L160,100"/><path class="ah" style="--d:0.55s" d="M171,106 L160,100 L171,94 z" fill="var(--mag)" stroke="none"/><path class="ed mag draw" style="--d:0.59s" d="M960,100 L560,100"/><path class="ah" style="--d:0.71s" d="M571,106 L560,100 L571,94 z" fill="var(--mag)" stroke="none"/><rect class="nd mag pop" style="--d:0.15s" x="35" y="52" width="250" height="96" rx="7"/><g transform="translate(138.0,57.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.15s"><path d="M-8,-11 h10 l6,6 v16 h-16 z M2,-11 v6 h6 M-4,0 h8 M-4,5 h8"/></g></g></g><text class="lb mag pop" style="--d:0.15s" x="160" y="122.25" text-anchor="middle">NetBeans project</text><text class="lb2 mag pop" style="--d:0.15s" x="160" y="138.75" text-anchor="middle">repo serves backdoored build</text><rect class="nd pop" style="--d:0.31s" x="435" y="52" width="250" height="96" rx="7"/><g transform="translate(538.0,57.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.31s"><path d="M-9,-8 h18 v12 h-18 z M-13,8 h26 l-3,-4 h-20 z"/></g></g></g><text class="lb pop" style="--d:0.31s" x="560" y="122.25" text-anchor="middle">developer build</text><text class="lb2 pop" style="--d:0.31s" x="560" y="138.75" text-anchor="middle">clones and builds</text><rect class="nd mag pop" style="--d:0.47s" x="820" y="52" width="280" height="96" rx="7"/><g transform="translate(938.0,57.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.47s"><path d="M-8,-5 l-5,5 5,5 M8,-5 l5,5 -5,5 M2,-12 l-4,24"/></g></g></g><text class="lb mag pop" style="--d:0.47s" x="960" y="122.25" text-anchor="middle">build runs it</text><text class="lb2 mag pop" style="--d:0.47s" x="960" y="138.75" text-anchor="middle">every JAR infected, 26 projects</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    <ul class="b">
+      <li>Java malware that hooks the build: every JAR a project built got backdoored. 26 projects shipped the infected artifacts.</li>
+    </ul>
+    <blockquote>"26 open source projects were backdoored by this malware and were actively serving backdoored code" <span class="ref">[12]</span></blockquote>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 07 · HEIST 2 ============ -->
+<section class="slide" data-part="ACT 1">
+  <div class="kicker"><span class="no">07</span><span class="mag">Heist 2 of 5</span> · chain link: the build fetches attacker code by name</div>
+  <h2>Dependency Confusion <span class="acc">2021 / 2026</span></h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 240" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(-2.5,0)"><path class="ed grn draw" style="--d:0.43s" d="M255,94 L445,64"/><path class="ah" style="--d:0.55s" d="M433,60 L445,64 L435,72 z" fill="var(--grn)" stroke="none"/><text class="lb2 pop" style="--d:0.63s" x="350" y="63" text-anchor="middle">version too low: ignored</text><path class="ed mag draw" style="--d:0.59s" d="M255,126 L445,156"/><path class="ah" style="--d:0.71s" d="M435,148 L445,156 L433,160 z" fill="var(--mag)" stroke="none"/><text class="lb2 pop" style="--d:0.79s" x="350" y="167" text-anchor="middle">higher version wins</text><path class="ed mag draw" style="--d:0.75s" d="M755,156 L940,127"/><path class="ah" style="--d:0.87s" d="M928,123 L940,127 L930,135 z" fill="var(--mag)" stroke="none"/><path class="ed draw" style="--d:0.75s" d="M755,64 L940,93"/><path class="ah" style="--d:0.87s" d="M930,85 L940,93 L928,97 z" fill="#46514a" stroke="none"/><rect class="nd pop" style="--d:0.15s" x="50" y="65" width="200" height="90" rx="7"/><g transform="translate(128.0,75.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.15s"><path d="M0,-4 a5,5 0 1 1 .01,0 M-9,10 a9,7 0 0 1 18,0"/></g></g></g><text class="lb pop" style="--d:0.15s" x="150" y="140.5" text-anchor="middle">pip resolver</text><rect class="nd grn pop" style="--d:0.31s" x="450" y="0" width="300" height="80" rx="7"/><g transform="translate(578.0,5.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic grn pop" style="--d:0.31s"><path d="M-10,-10 h20 v20 h-20 z M-10,-3 h20 M-10,4 h20"/></g></g></g><text class="lb grn pop" style="--d:0.31s" x="600" y="70.5" text-anchor="middle">internal index: hal 1.x</text><rect class="nd mag pop" style="--d:0.47s" x="450" y="140" width="300" height="80" rx="7"/><g transform="translate(578.0,145.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.47s"><path d="M-10,-10 h20 v20 h-20 z M-10,-3 h20 M-10,4 h20"/></g></g></g><text class="lb mag pop" style="--d:0.47s" x="600" y="210.5" text-anchor="middle">public index: hal 2.0.0</text><rect class="nd pop" style="--d:0.63s" x="945" y="65" width="210" height="90" rx="7"/><g transform="translate(1028.0,75.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.63s"><path d="M-9,8 h18 v-10 l-4,-6 h-10 l-4,6 z M-3,8 v-8 h5 v8 M2,-2 h6"/></g></g></g><text class="lb pop" style="--d:0.63s" x="1050" y="140.5" text-anchor="middle">vendor CI</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    <ul class="b">
+      <li>2021: Birsan, 35+ companies hit. May 2026: 33 malicious npm packages, nine org scopes.</li>
+    </ul>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 08 · HEIST 3 ============ -->
+<section class="slide" data-part="ACT 1">
+  <div class="kicker"><span class="no">08</span><span class="mag">Heist 3 of 5</span> · chain link: the build can read every secret</div>
+  <h2>tj-actions/changed-files <span class="acc">2025</span></h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 220" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(0.0,0)"><path class="ed draw" style="--d:0.43s" d="M600,100 L170,100"/><path class="ah" style="--d:0.55s" d="M181,106 L170,100 L181,94 z" fill="#46514a" stroke="none"/><path class="ed mag draw" style="--d:0.59s" d="M1030,100 L600,100"/><path class="ah" style="--d:0.71s" d="M611,106 L600,100 L611,94 z" fill="var(--mag)" stroke="none"/><rect class="nd mag pop" style="--d:0.15s" x="45" y="52" width="250" height="96" rx="7"/><g transform="translate(148.0,57.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.15s"><path d="M-10,-10 h8 l12,12 -8,8 -12,-12 z M-5,-5 l.01,0"/></g></g></g><text class="lb mag pop" style="--d:0.15s" x="170" y="122.25" text-anchor="middle">tj-actions repo</text><text class="lb2 mag pop" style="--d:0.15s" x="170" y="138.75" text-anchor="middle">tag moved to attacker code</text><rect class="nd pop" style="--d:0.31s" x="475" y="52" width="250" height="96" rx="7"/><g transform="translate(578.0,57.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.31s"><path d="M-9,8 h18 v-10 l-4,-6 h-10 l-4,6 z M-3,8 v-8 h5 v8 M2,-2 h6"/></g></g></g><text class="lb pop" style="--d:0.31s" x="600" y="122.25" text-anchor="middle">thousands of CI runs</text><text class="lb2 pop" style="--d:0.31s" x="600" y="138.75" text-anchor="middle">pull the action by tag</text><rect class="nd mag pop" style="--d:0.47s" x="905" y="52" width="250" height="96" rx="7"/><g transform="translate(1008.0,57.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.47s"><path d="M-6,0 a5,5 0 1 0 10,0 a5,5 0 1 0 -10,0 M-1,0 h12 M7,0 v4 M11,0 v3"/></g></g></g><text class="lb mag pop" style="--d:0.47s" x="1030" y="122.25" text-anchor="middle">CI secrets</text><text class="lb2 mag pop" style="--d:0.47s" x="1030" y="138.75" text-anchor="middle">echoed to public logs</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    <ul class="b">
+      <li>A widely used GitHub Action compromised: CI secrets dumped into public logs, ecosystem-wide.</li>
+      <li>A moved tag delivers attacker code into thousands of builds: <b>CI variables are readable by the build</b>.</li>
+    </ul>
+    <blockquote>"caused many repositories to leak their secrets" <span class="ref">[6]</span></blockquote>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 09 · HEIST 4 ============ -->
+<section class="slide" data-part="ACT 1">
+  <div class="kicker"><span class="no">09</span><span class="mag">Heist 4 of 5</span> · chain link: a valid signature is not safety</div>
+  <h2>ShadowHammer <span class="acc">2019</span></h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 220" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(-5.0,0)"><path class="ed draw" style="--d:0.43s" d="M490,100 L150,100"/><path class="ah" style="--d:0.55s" d="M161,106 L150,100 L161,94 z" fill="#46514a" stroke="none"/><path class="ed mag draw" style="--d:0.59s" d="M830,100 L490,100"/><path class="ah" style="--d:0.71s" d="M501,106 L490,100 L501,94 z" fill="var(--mag)" stroke="none"/><path class="ed mag draw" style="--d:0.75s" d="M1080,100 L830,100"/><path class="ah" style="--d:0.87s" d="M841,106 L830,100 L841,94 z" fill="var(--mag)" stroke="none"/><rect class="nd pop" style="--d:0.15s" x="40" y="52" width="220" height="96" rx="7"/><g transform="translate(128.0,65.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.15s"><path d="M-11,-9 h22 v7 h-22 z M-11,2 h22 v7 h-22 z M-7,-5.5 l.01,0 M-7,5.5 l.01,0"/></g></g></g><text class="lb pop" style="--d:0.15s" x="150" y="130.5" text-anchor="middle">ASUS update servers</text><rect class="nd pop" style="--d:0.31s" x="375" y="52" width="230" height="96" rx="7"/><g transform="translate(468.0,65.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.31s"><path d="M-9,4 h18 v8 h-18 z M0,-11 v13 M0,-11 l-5,5 M0,-11 l5,5"/></g></g></g><text class="lb pop" style="--d:0.31s" x="490" y="130.5" text-anchor="middle">Live Update utility</text><rect class="nd mag pop" style="--d:0.47s" x="715" y="52" width="230" height="96" rx="7"/><g transform="translate(808.0,65.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.47s"><path d="M0,-8 a7,7 0 0 1 7,7 c0,4 -2,6 -2,9 h-10 c0,-3 -2,-5 -2,-9 a7,7 0 0 1 7,-7 M-5,0 h10 M-5,4 h10 M-4,-7 l-3,-4 M4,-7 l3,-4"/></g></g></g><text class="lb mag pop" style="--d:0.47s" x="830" y="130.5" text-anchor="middle">trojanized update</text><rect class="nd amb pop" style="--d:0.63s" x="990" y="52" width="180" height="96" rx="7"/><g transform="translate(1058.0,58.0)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic amb pop" style="--d:0.63s"><path d="M-6,-11 h12 v9 a6,6 0 0 1 -12,0 z M-3,2 v10 l3,-3 3,3 v-10"/></g></g></g><text class="lb amb pop" style="--d:0.63s" x="1080" y="123.0" text-anchor="middle">valid ASUS</text><text class="lb amb pop" style="--d:0.63s" x="1080" y="138.0" text-anchor="middle">signature</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    <ul class="b">
+      <li>ASUS Live Update trojanized, shipped by the vendor's own update utility to most ASUS machines.</li>
+      <li>Signed with <b>legitimate ASUS certificates</b>: the signature checks out.</li>
+    </ul>
+    <blockquote>"a sophisticated supply chain attack involving the ASUS Live Update Utility" <span class="ref">[9]</span></blockquote>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 10 · HEIST 5 ============ -->
+<section class="slide" data-part="ACT 1">
+  <div class="kicker"><span class="no">10</span><span class="mag">Heist 5 of 5</span> · chain link: the update channel delivers it</div>
+  <h2>PKfail + OpenWrt ASU <span class="acc">2024</span></h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 430" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(2.5,0)"><path class="ed mag draw" style="--d:0.43s" d="M590,90 L170,90"/><path class="ah" style="--d:0.55s" d="M181,96 L170,90 L181,84 z" fill="var(--mag)" stroke="none"/><path class="ed mag draw" style="--d:0.59s" d="M1010,90 L590,90"/><path class="ah" style="--d:0.71s" d="M601,96 L590,90 L601,84 z" fill="var(--mag)" stroke="none"/><path class="ed draw" style="--d:0.91s" d="M590,310 L170,310"/><path class="ah" style="--d:1.03s" d="M181,316 L170,310 L181,304 z" fill="#46514a" stroke="none"/><path class="ed mag draw" style="--d:1.07s" d="M1010,310 L590,310"/><path class="ah" style="--d:1.19s" d="M601,316 L590,310 L601,304 z" fill="var(--mag)" stroke="none"/><rect class="nd amb pop" style="--d:0.15s" x="45" y="46" width="250" height="88" rx="7"/><g transform="translate(148.0,47.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic amb pop" style="--d:0.15s"><path d="M-6,0 a5,5 0 1 0 10,0 a5,5 0 1 0 -10,0 M-1,0 h12 M7,0 v4 M11,0 v3"/></g></g></g><text class="lb amb pop" style="--d:0.15s" x="170" y="112.25" text-anchor="middle">AMI test key</text><text class="lb2 amb pop" style="--d:0.15s" x="170" y="128.75" text-anchor="middle">source comment: "DO NOT TRUST"</text><rect class="nd mag pop" style="--d:0.31s" x="465" y="46" width="250" height="88" rx="7"/><g transform="translate(568.0,55.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.31s"><path d="M-8,-2 h16 v12 h-16 z M-5,-2 v-4 a5,5 0 0 1 10,0 v4"/></g></g></g><text class="lb mag pop" style="--d:0.31s" x="590" y="120.5" text-anchor="middle">private half leaked</text><rect class="nd mag pop" style="--d:0.47s" x="870" y="46" width="280" height="88" rx="7"/><g transform="translate(988.0,47.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.47s"><path d="M-8,-8 h16 v16 h-16 z M-12,-3 h4 M-12,3 h4 M8,-3 h4 M8,3 h4 M-3,-12 v4 M3,-12 v4 M-3,8 v4 M3,8 v4"/></g></g></g><text class="lb mag pop" style="--d:0.47s" x="1010" y="112.25" text-anchor="middle">UEFI trust anchor</text><text class="lb2 mag pop" style="--d:0.47s" x="1010" y="128.75" text-anchor="middle">hundreds of device models</text><rect class="nd mag pop" style="--d:0.63s" x="45" y="266" width="250" height="88" rx="7"/><g transform="translate(148.0,267.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.63s"><path d="M-8,-5 l-5,5 5,5 M8,-5 l5,5 -5,5 M2,-12 l-4,24"/></g></g></g><text class="lb mag pop" style="--d:0.63s" x="170" y="332.25" text-anchor="middle">command injection</text><text class="lb2 mag pop" style="--d:0.63s" x="170" y="348.75" text-anchor="middle">ASU image builder</text><rect class="nd mag pop" style="--d:0.79s" x="465" y="266" width="250" height="88" rx="7"/><g transform="translate(568.0,267.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.79s"><path d="M0,-10 a10,10 0 1 1 -.01,0 M0,0 v-6 M0,0 l4,3"/></g></g></g><text class="lb mag pop" style="--d:0.79s" x="590" y="332.25" text-anchor="middle">cache key truncated</text><text class="lb2 mag pop" style="--d:0.79s" x="590" y="348.75" text-anchor="middle">12 of 64 hex chars</text><rect class="nd amb pop" style="--d:0.95s" x="870" y="266" width="280" height="88" rx="7"/><g transform="translate(988.0,267.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic amb pop" style="--d:0.95s"><path d="M-6,-11 h12 v9 a6,6 0 0 1 -12,0 z M-3,2 v10 l3,-3 3,3 v-10"/></g></g></g><text class="lb amb pop" style="--d:0.95s" x="1010" y="332.25" text-anchor="middle">malicious images</text><text class="lb2 amb pop" style="--d:0.95s" x="1010" y="348.75" text-anchor="middle">legitimate build key</text><text class="lb dim pop" style="--d:0.1s" x="90" y="30" text-anchor="middle">PKfail</text><text class="lb dim pop" style="--d:0.4s" x="130" y="250" text-anchor="middle">OpenWrt ASU</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    <ul class="b">
+      <li>PKfail: AMI's "DO NOT TRUST" test key leaked, became the root key of hundreds of device models <span class="dimmer">[3]</span>.</li>
+      <li>OpenWrt ASU: command injection into the image builder, cache key cut to 12 of 64 hex chars.</li>
+    </ul>
+    <blockquote>"malicious firmware images signed with the legitimate build key" <span class="ref">[2]</span></blockquote>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 11 · 2026: THE CHAIN, THIS YEAR ============ -->
+<section class="slide" data-part="ACT 1">
+  <div class="kicker"><span class="no">11</span>Act 1 · this year, not five years ago</div>
+  <h2>2026: the same chain, <span class="acc">at scale</span></h2>
+  <div class="body">
+    <ul class="b mag">
+      <li><b>Mar 2026:</b> axios maintainer hijacked. Malicious 1.14.1 / 0.30.4 to ~100M weekly downloads; hidden dep deploys a RAT <span class="dimmer">[16]</span>.</li>
+      <li><b>Aug 2026:</b> CHAINDROP: keyv maintainer compromised, worm backdoors co-owned packages, 150M+ weekly downloads <span class="dimmer">[15]</span>.</li>
+      <li class="dim">May 2026 gets its own slide: the Shai-Hulud worm, next.</li>
+    </ul>
+    <p class="mag a" style="margin-top:2.5vh;font-size:1.15em"><b>Takeaway:</b> provenance proves WHO built it, never WHAT it is.</p>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+<!-- ============ 12 · SHAI-HULUD ============ -->
+<section class="slide" data-part="ACT 1">
+  <div class="kicker"><span class="no">12</span><span class="mag">May 2026</span> · the worm that shipped valid provenance</div>
+  <h2>Shai-Hulud: <span class="acc">170+ packages, one worm</span></h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 430" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(-5.0,0)"><path class="ed mag draw" style="--d:0.43s" d="M960,100 L240,100"/><path class="ah" style="--d:0.55s" d="M251,106 L240,100 L251,94 z" fill="var(--mag)" stroke="none"/><path class="ed mag draw" style="--d:0.59s" d="M960,320 L960,100"/><path class="ah" style="--d:0.71s" d="M954,111 L960,100 L966,111 z" fill="var(--mag)" stroke="none"/><path class="ed mag draw" style="--d:0.75s" d="M240,320 L960,320"/><path class="ah" style="--d:0.87s" d="M949,314 L960,320 L949,326 z" fill="var(--mag)" stroke="none"/><path class="ed mag draw" style="--d:0.75s" d="M240,100 C300,100 300,320 240,320"/><path class="ah" style="--d:0.87s" d="M246,309 L240,320 L234,309 z" fill="var(--mag)" stroke="none"/><rect class="nd mag pop" style="--d:0.15s" x="100" y="52" width="280" height="96" rx="7"/><g transform="translate(218.0,57.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.15s"><path d="M-6,0 a5,5 0 1 0 10,0 a5,5 0 1 0 -10,0 M-1,0 h12 M7,0 v4 M11,0 v3"/></g></g></g><text class="lb mag pop" style="--d:0.15s" x="240" y="122.25" text-anchor="middle">maintainer token stolen</text><text class="lb2 mag pop" style="--d:0.15s" x="240" y="138.75" text-anchor="middle">phishing / compromised device</text><rect class="nd mag pop" style="--d:0.31s" x="810" y="52" width="300" height="96" rx="7"/><g transform="translate(938.0,57.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.31s"><path d="M-9,4 h18 v8 h-18 z M0,-11 v13 M0,-11 l-5,5 M0,-11 l5,5"/></g></g></g><text class="lb mag pop" style="--d:0.31s" x="960" y="122.25" text-anchor="middle">trojanized versions published</text><text class="lb2 mag pop" style="--d:0.31s" x="960" y="138.75" text-anchor="middle">co-owned packages, higher version</text><rect class="nd mag pop" style="--d:0.47s" x="810" y="272" width="300" height="96" rx="7"/><g transform="translate(938.0,277.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.47s"><path d="M0,-7 a7,7 0 0 1 7,7 c0,4 -2,6 -2,9 h-10 c0,-3 -2,-5 -2,-9 a7,7 0 0 1 7,-7 M-4,-7 l-3,-4 M4,-7 l3,-4 M-5,1 h10 M-5,6 h10"/></g></g></g><text class="lb mag pop" style="--d:0.47s" x="960" y="342.25" text-anchor="middle">installs on next build</text><text class="lb2 mag pop" style="--d:0.47s" x="960" y="358.75" text-anchor="middle">steals the next tokens</text><rect class="nd pop" style="--d:0.63s" x="100" y="272" width="280" height="96" rx="7"/><g transform="translate(218.0,277.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.63s"><path d="M0,-7 a7,7 0 0 1 7,7 c0,4 -2,6 -2,9 h-10 c0,-3 -2,-5 -2,-9 a7,7 0 0 1 7,-7 M-4,-7 l-3,-4 M4,-7 l3,-4 M-5,1 h10 M-5,6 h10"/></g></g></g><text class="lb pop" style="--d:0.63s" x="240" y="342.25" text-anchor="middle">worm spreads</text><text class="lb2 pop" style="--d:0.63s" x="240" y="358.75" text-anchor="middle">hundreds of packages</text><text class="lb2 dim pop" style="--d:1.8s" x="600" y="218" text-anchor="middle">self-propagating: every victim funds the next wave</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    <ul class="b">
+      <li>Sep 2025: first self-propagating npm worm, "hundreds of software packages" <span class="dimmer">[8]</span>. May 2026: back, 373 malicious versions across 172 packages <span class="dimmer">[14]</span>.</li>
+      <li>The May wave carried <b>valid SLSA Build L3 provenance</b>: the build receipt was real, the code was not.</li>
+    </ul>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+
+<!-- ============ 13 · SYNTHESIS ============ -->
+<section class="slide" data-part="ACT 1">
+  <div class="kicker"><span class="no">13</span>Act 1 · Synthesis</div>
+  <h2>The assembled <span class="acc">chain</span></h2>
+  <div class="body">
+    <svg class="diag big" viewBox="0 0 1200 210" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(0.0,0)"><path class="ed draw" style="--d:0.47s" d="M243,100 L282,100"/><path class="ah" style="--d:0.59s" d="M271,94 L282,100 L271,106 z" fill="#46514a" stroke="none"/><path class="ed draw" style="--d:0.72s" d="M468,100 L507,100"/><path class="ah" style="--d:0.84s" d="M496,94 L507,100 L496,106 z" fill="#46514a" stroke="none"/><path class="ed draw" style="--d:0.97s" d="M693,100 L732,100"/><path class="ah" style="--d:1.09s" d="M721,94 L732,100 L721,106 z" fill="#46514a" stroke="none"/><path class="ed draw" style="--d:1.22s" d="M918,100 L957,100"/><path class="ah" style="--d:1.34s" d="M946,94 L957,100 L946,106 z" fill="#46514a" stroke="none"/><circle class="nd mag pop" style="--d:0.1s" cx="150" cy="100" r="88"/><text class="lb pop" style="--d:0.1s" x="150" y="96" text-anchor="middle">CODE</text><text class="lb2 pop" style="--d:0.1s" x="150" y="116" text-anchor="middle">in the build</text><circle class="nd mag pop" style="--d:0.35s" cx="375" cy="100" r="88"/><text class="lb pop" style="--d:0.35s" x="375" y="96" text-anchor="middle">FETCH</text><text class="lb2 pop" style="--d:0.35s" x="375" y="116" text-anchor="middle">by name</text><circle class="nd mag pop" style="--d:0.6s" cx="600" cy="100" r="88"/><text class="lb pop" style="--d:0.6s" x="600" y="96" text-anchor="middle">SECRETS</text><text class="lb2 pop" style="--d:0.6s" x="600" y="116" text-anchor="middle">out</text><circle class="nd mag pop" style="--d:0.85s" cx="825" cy="100" r="88"/><text class="lb pop" style="--d:0.85s" x="825" y="96" text-anchor="middle">SIGN</text><text class="lb2 pop" style="--d:0.85s" x="825" y="116" text-anchor="middle">by the vendor</text><circle class="nd mag hot pop" style="--d:1.1s" cx="1050" cy="100" r="88"/><text class="lb pop" style="--d:1.1s" x="1050" y="96" text-anchor="middle">DELIVER</text><text class="lb2 pop" style="--d:1.1s" x="1050" y="116" text-anchor="middle">to devices</text><text class="lb2 mag pop" style="--d:0.35s" x="150" y="210" text-anchor="middle">[12]</text><text class="lb2 mag pop" style="--d:0.6s" x="375" y="210" text-anchor="middle">[13]</text><text class="lb2 mag pop" style="--d:0.85s" x="600" y="210" text-anchor="middle">[6]</text><text class="lb2 mag pop" style="--d:1.1s" x="825" y="210" text-anchor="middle">[9]</text><text class="lb2 mag pop" style="--d:1.35s" x="1050" y="210" text-anchor="middle">[2] [3]</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+    <p style="margin-top:5vh;font-size:1.3em">None of these mechanisms is broken.</p>
+    <p class="mag a glitch" style="font-size:1.7em;font-family:var(--display);text-transform:uppercase;letter-spacing:.04em;margin-top:2vh">Composition is the vulnerability.</p>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 14 · ACT 2 DIVIDER ============ -->
+<section class="slide bg-crt divider" data-part="ACT 2">
+  <div class="body">
+    <div class="act-no glitch">ACT 2</div>
+    <h1>The problem, formulated</h1>
+    <p class="sub">Why firmware, why the pipeline, and why you cannot ask the device for the truth.</p>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 15 · WHY FIRMWARE ============ -->
+<section class="slide" data-part="ACT 2">
+  <div class="kicker"><span class="no">15</span>Act 2 · the target</div>
+  <h2>Why <span class="acc">firmware</span></h2>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card a" style="text-align:center;padding:3.5vh 1.5vw"><div style="font-size:3.2em;line-height:1;margin-bottom:1.5vh">🤫</div><h3 class="mag">Silent</h3><p class="dim">No user is watching when it updates.</p></div>
+      <div class="card a" style="text-align:center;padding:3.5vh 1.5vw"><div style="font-size:3.2em;line-height:1;margin-bottom:1.5vh">⏳</div><h3 class="mag">Long-lived</h3><p class="dim">Fielded for years, patched never.</p></div>
+      <div class="card a" style="text-align:center;padding:3.5vh 1.5vw"><div style="font-size:3.2em;line-height:1;margin-bottom:1.5vh">👁️</div><h3 class="mag">Unmonitored</h3><p class="dim">Nobody watches its network traffic.</p></div>
+    </div>
+    <blockquote style="margin-top:4vh">ESPHome's own threat model lists "Supply-chain attacks against ESPHome or its dependencies." <span class="ref">[11]</span></blockquote>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 18 · THE QUESTION ============ -->
+<section class="slide" data-part="ACT 2">
+  <div class="kicker"><span class="no">16</span>Act 2 · The question, stated clean</div>
+  <h2>One config line in a <span class="acc">vendor repo</span></h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 230" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(-20.0,0)"><path class="ed amb draw" style="--d:0.43s" d="M570,105 L180,105"/><path class="ah" style="--d:0.55s" d="M191,111 L180,105 L191,99 z" fill="var(--amb)" stroke="none"/><path class="ed mag draw" style="--d:0.59s" d="M910,105 L570,105"/><path class="ah" style="--d:0.71s" d="M581,111 L570,105 L581,99 z" fill="var(--mag)" stroke="none"/><path class="ed grn draw" style="--d:0.75s" d="M1120,105 L910,105"/><path class="ah" style="--d:0.87s" d="M921,111 L910,105 L921,99 z" fill="var(--grn)" stroke="none"/><rect class="nd amb pop" style="--d:0.15s" x="45" y="57" width="270" height="96" rx="7"/><g transform="translate(158.0,70.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic amb pop" style="--d:0.15s"><path d="M-8,-11 h10 l6,6 v16 h-16 z M2,-11 v6 h6 M-4,0 h8 M-4,5 h8"/></g></g></g><text class="lb amb pop" style="--d:0.15s" x="180" y="135.5" text-anchor="middle">one line in the vendor repo</text><rect class="nd pop" style="--d:0.31s" x="465" y="57" width="210" height="96" rx="7"/><g transform="translate(548.0,70.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.31s"><path d="M-9,8 h18 v-10 l-4,-6 h-10 l-4,6 z M-3,8 v-8 h5 v8 M2,-2 h6"/></g></g></g><text class="lb pop" style="--d:0.31s" x="570" y="135.5" text-anchor="middle">the pipeline</text><rect class="nd mag pop" style="--d:0.47s" x="800" y="57" width="220" height="96" rx="7"/><g transform="translate(888.0,63.0)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.47s"><path d="M-8,-8 h16 v16 h-16 z M-12,-3 h4 M-12,3 h4 M8,-3 h4 M8,3 h4 M-3,-12 v4 M3,-12 v4 M-3,8 v4 M3,8 v4"/></g></g></g><text class="lb mag pop" style="--d:0.47s" x="910" y="128.0" text-anchor="middle">signed backdoored</text><text class="lb mag pop" style="--d:0.47s" x="910" y="143.0" text-anchor="middle">image</text><rect class="nd grn pop" style="--d:0.63s" x="1045" y="57" width="150" height="96" rx="7"/><g transform="translate(1098.0,70.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic grn pop" style="--d:0.63s"><path d="M-6,-12 h12 v24 h-12 z M-2,9 h4"/></g></g></g><text class="lb grn pop" style="--d:0.63s" x="1120" y="135.5" text-anchor="middle">device</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    <ul class="b mag">
+      <li>Does it really end in a validly signed backdoor, auto-applied by a device that checks everything, invisible to every software signal?</li>
+      <li>And if it does: how do you prove it afterward, without the vendor's help?</li>
+    </ul>
+    <p class="green" style="margin-top:3vh;font-size:1.2em">The rest of this talk replays that chain, then reads the flash chip.</p>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+
+
+<!-- ============ 19 · ACT 3 DIVIDER ============ -->
+<section class="slide bg-divider divider" data-part="ACT 3">
+  <div class="body">
+    <div style="display:flex;align-items:baseline;gap:2.5vw">
+      <div class="act-no glitch">ACT 3</div>
+      <div>
+        <h1 style="margin:0">The proof</h1>
+        <p class="sub">The whole chain, replayed against a fictional vendor.</p>
+      </div>
+    </div>
+    <div class="disclaimer" style="max-width:110ch;margin-top:0.5vh;padding:0.8vh 1.2em">
+      <b>FICTIONAL:</b> DoorBellino, an imaginary vendor. The lab replays the Act 1 chain end to end. The flaw, up front: <span class="amber">--extra-index-url</span>. Take-home CTF: Confused at the Source.
+    </div>
+    
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+
+<!-- ============ 20 · THE LAB AS BUILT ============ -->
+<section class="slide" data-part="ACT 3">
+  <div class="kicker"><span class="no">18</span>Act 3 · The lab as built</div>
+  <h2>One vendor pipeline, <span class="acc">every stage real</span></h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 560" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(-5.0,0)"><path class="ed draw" style="--d:0.59s" d="M250,212 L420,228"/><path class="ah" style="--d:0.71s" d="M410,221 L420,228 L408,233 z" fill="#46514a" stroke="none"/><path class="ed grn draw" style="--d:0.59s" d="M250,341 C295,341 295,287 420,287"/><path class="ah" style="--d:0.71s" d="M408,285 L420,287 L411,296 z" fill="var(--grn)" stroke="none"/><path class="ed mag draw" style="--d:0.59s" d="M560,242 L560,64"/><path class="ah" style="--d:0.71s" d="M554,75 L560,64 L566,75 z" fill="var(--mag)" stroke="none"/><text class="lb2 pop" style="--d:0.79s" x="560" y="141" text-anchor="middle">2.0.0 wins</text><path class="ed draw" style="--d:0.75s" d="M560,346 L560,242"/><path class="ah" style="--d:0.87s" d="M554,253 L560,242 L566,253 z" fill="#46514a" stroke="none"/><path class="ed draw" style="--d:0.91s" d="M560,450 L560,346"/><path class="ah" style="--d:1.03s" d="M554,357 L560,346 L566,357 z" fill="#46514a" stroke="none"/><path class="ed amb draw" style="--d:1.07s" d="M920,450 L560,450"/><path class="ah" style="--d:1.19s" d="M571,456 L560,450 L571,444 z" fill="var(--amb)" stroke="none"/><path class="ed grn draw" style="--d:1.23s" d="M1120,450 L920,450"/><path class="ah" style="--d:1.35s" d="M931,456 L920,450 L931,444 z" fill="var(--grn)" stroke="none"/><path class="flow" style="--fd:2.2s" d="M700,226 L810,213"/><path class="flow" style="--fd:2.4s" d="M1076,395 C950,325 950,325 964,255"/><rect class="nd mag pop" style="--d:0.1s" x="400" y="14" width="320" height="100" rx="7"/><g transform="translate(538.0,21.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.1s"><path d="M-10,-10 h20 v20 h-20 z M-10,-3 h20 M-10,4 h20"/></g></g></g><text class="lb mag pop" style="--d:0.1s" x="560" y="86.25" text-anchor="middle">public registry</text><text class="lb2 mag pop" style="--d:0.1s" x="560" y="102.75" text-anchor="middle">attacker publishes hal 2.0.0</text><rect class="nd pop" style="--d:0.15s" x="15" y="150" width="230" height="100" rx="7"/><g transform="translate(108.0,157.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.15s"><path d="M-8,-11 h10 l6,6 v16 h-16 z M2,-11 v6 h6 M-4,0 h8 M-4,5 h8"/></g></g></g><text class="lb pop" style="--d:0.15s" x="130" y="222.25" text-anchor="middle">vendor repo</text><text class="lb2 pop" style="--d:0.15s" x="130" y="238.75" text-anchor="middle">gitlab: doorbellino</text><rect class="nd grn pop" style="--d:0.31s" x="15" y="330" width="230" height="100" rx="7"/><g transform="translate(108.0,337.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic grn pop" style="--d:0.31s"><path d="M-10,-10 h20 v20 h-20 z M-10,-3 h20 M-10,4 h20"/></g></g></g><text class="lb grn pop" style="--d:0.31s" x="130" y="402.25" text-anchor="middle">internal registry</text><text class="lb2 grn pop" style="--d:0.31s" x="130" y="418.75" text-anchor="middle">doorbellino-hal 1.x</text><rect class="nd pop" style="--d:0.5s" x="390" y="160" width="340" height="352" rx="7"/><rect class="nd pop" style="--d:0.47s" x="425" y="200" width="270" height="84" rx="7"/><text class="lb pop" style="--d:0.47s" x="560" y="237.25" text-anchor="middle">1 · build</text><text class="lb2 pop" style="--d:0.47s" x="560" y="253.75" text-anchor="middle">fw, tests, deps</text><rect class="nd amb pop" style="--d:0.63s" x="425" y="304" width="270" height="84" rx="7"/><text class="lb amb pop" style="--d:0.63s" x="560" y="341.25" text-anchor="middle">2 · sign</text><text class="lb2 amb pop" style="--d:0.63s" x="560" y="357.75" text-anchor="middle">vendor key signs</text><rect class="nd amb pop" style="--d:0.79s" x="425" y="408" width="270" height="84" rx="7"/><text class="lb amb pop" style="--d:0.79s" x="560" y="445.25" text-anchor="middle">3 · deploy</text><text class="lb2 amb pop" style="--d:0.79s" x="560" y="461.75" text-anchor="middle">manual gate</text><rect class="nd amb pop" style="--d:0.95s" x="815" y="400" width="210" height="100" rx="7"/><g transform="translate(898.0,407.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic amb pop" style="--d:0.95s"><path d="M-5,7 a7,7 0 0 1 -1,-14 a9,9 0 0 1 17,-2 a6,6 0 0 1 -1,16 z"/></g></g></g><text class="lb amb pop" style="--d:0.95s" x="920" y="472.25" text-anchor="middle">OTA server</text><text class="lb2 amb pop" style="--d:0.95s" x="920" y="488.75" text-anchor="middle">serving 1.4.2</text><rect class="nd grn pop" style="--d:1.11s" x="1045" y="400" width="150" height="100" rx="7"/><g transform="translate(1098.0,407.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic grn pop" style="--d:1.11s"><path d="M-6,-12 h12 v24 h-12 z M-2,9 h4"/></g></g></g><text class="lb grn pop" style="--d:1.11s" x="1120" y="472.25" text-anchor="middle">doorbell</text><text class="lb2 grn pop" style="--d:1.11s" x="1120" y="488.75" text-anchor="middle">auto-applies</text><rect class="nd mag pop" style="--d:1.27s" x="815" y="150" width="210" height="100" rx="7"/><g transform="translate(898.0,157.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:1.27s"><path d="M-11,-9 h22 v7 h-22 z M-11,2 h22 v7 h-22 z M-7,-5.5 l.01,0 M-7,5.5 l.01,0"/></g></g></g><text class="lb mag pop" style="--d:1.27s" x="920" y="222.25" text-anchor="middle">collector</text><text class="lb2 mag pop" style="--d:1.27s" x="920" y="238.75" text-anchor="middle">loot + beacons</text><text class="lb dim pop" style="--d:0.55s" x="560" y="186" text-anchor="middle">GitLab CI pipeline</text><text class="lb2 amb pop" style="--d:1.6s" x="772" y="478" text-anchor="middle">push release</text><text class="lb2 grn pop" style="--d:1.7s" x="1022" y="428" text-anchor="middle">1.4.3</text><text class="lb2 mag pop" style="--d:2.3s" x="740" y="208" text-anchor="middle">keys + tokens</text><text class="lb2 mag pop" style="--d:2.4s" x="1065" y="310" text-anchor="middle">beacon</text></g></svg>
+    <p class="dim a" style="margin-top:1vh;text-align:center">Stages mirror the kit's <span class="cyan">.gitlab-ci.yml</span>: build, sign, deploy. The magenta paths are what you will watch land live.</p>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 21 · DEMO 1: THE FLAW (demo-mode only) ============ -->
+<section class="slide demo-slide" data-part="ACT 3 · LIVE">
+  <div class="replay">replays: heist 2</div>
+  <div class="kicker"><span class="mag">Demo 1</span> · THE FLAW · ~2 min</div>
+  <h2>One line lets the public index <span class="acc">win</span></h2>
+  <div class="body twocol">
+    <ul class="b">
+      <li>Vendor pip config: <span class="amber">--extra-index-url</span> points at the public registry.</li>
+      <li>A higher <span class="cyan">doorbellino-hal</span> 2.x from the public index resolves over the internal package.</li>
+    </ul>
+    <div>
+      <pre class="term"><span class="c"># vendor CI, build job</span>
+<span class="p">$</span> pip install -r requirements.txt \
+    --extra-index-url <span class="amber">$EXTRA_INDEX_URL</span>
+<span class="out">Downloading .../</span><span class="hit">doorbellino_hal-2.0.0.tar.gz</span><span class="cursor"></span></pre>
+      <p class="dim a">Expected: pip picks the attacker's version.</p>
+    </div>
+  </div>
+  <aside class="notes">DEMO 1 (~2 min). Pre-talk state: clean 1.4.2 applied, 2.0.0 unpublished. Steps: show the vendor .gitlab-ci.yml extra-index line, then the pip resolution line in the job log picking doorbellino-hal 2.0.0 over the internal package. Teaching beat: the resolver decides what code the vendor installs. Fallback: recording slides/rec-fallback/demo1.mp4.</aside>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 22 · DEMO 2: CODE IN THE BUILD (demo-mode only) ============ -->
+<section class="slide demo-slide" data-part="ACT 3 · LIVE">
+  <div class="replay">replays: heist 1</div>
+  <div class="kicker"><span class="mag">Demo 2</span> · CODE IN THE BUILD · ~3 min</div>
+  <h2>The hook executes <span class="acc">inside the vendor's CI</span></h2>
+  <div class="body twocol">
+    <ul class="b">
+      <li>The malicious package's build hook runs on the vendor's runner.</li>
+      <li>Proof is a <b>marker file</b>, not a print: pip hides backend stdout.</li>
+    </ul>
+    <div>
+      <pre class="term"><span class="c"># end of the build job log</span>
+<span class="p">$</span> cat dbg-hook.txt
+<span class="hit">inject: implant at 0x1E0000</span><span class="cursor"></span></pre>
+      <p class="dim a">Expected: dbg-hook.txt in the job log.</p>
+    </div>
+  </div>
+  <aside class="notes">DEMO 2 (~3 min). Show the attacker's armed package (implant.bin + cmdclass), then the vendor build job log: dbg-hook.txt with 'inject: implant at 0x1E0000'. Teaching beat: attacker code, vendor runner, zero warnings. Let the loot land during demo 3, do not wait here. Fallback: recording slides/rec-fallback/demo2.mp4.</aside>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 23 · DEMO 3: THE LOOT (demo-mode only) ============ -->
+<section class="slide demo-slide" data-part="ACT 3 · LIVE">
+  <div class="replay">replays: heist 3</div>
+  <div class="kicker"><span class="mag">Demo 3</span> · THE LOOT · ~2 min</div>
+  <h2>The hook <span class="acc">exfiltrates the keys</span></h2>
+  <div class="body twocol">
+    <ul class="b">
+      <li>The signing key and the OTA push token land in the attacker's collector.</li>
+      <li>Also looted: the project trigger token. It matters in two slides.</li>
+    </ul>
+    <div>
+      <pre class="term"><span class="c"># collector</span>
+<span class="hit">exfil: loot sent to collector</span>
+<span class="p">$</span> curl -s http://collector:9000/log | tail -n1
+<span class="out">{"kind": "loot", "body": {</span>
+  <span class="key">"SIGNING_KEY"</span><span class="out">: "…",</span>
+  <span class="key">"OTA_PUSH_TOKEN"</span><span class="out">: "…",</span>
+  <span class="key">"GITLAB_TRIGGER_TOKEN"</span><span class="out">: "…"}}</span><span class="cursor"></span></pre>
+    </div>
+  </div>
+  <aside class="notes">DEMO 3 (~2 min). REVEAL slide: the loot from demo 2's run has landed by now. Curl the collector, show the three keys. Teaching beat: CI variables are fully readable by whatever the build runs. Fallback: recording slides/rec-fallback/demo3.mp4.</aside>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 24 · DEMO 4: THE GATE (demo-mode only) ============ -->
+<section class="slide demo-slide" data-part="ACT 3 · LIVE">
+  <div class="replay">replays: heists 4 + 5</div>
+  <div class="kicker"><span class="mag">Demo 4</span> · THE GATE · ~4 min</div>
+  <h2>The gate controls <span class="acc">who</span> clicks, never <span class="acc">what</span> ships</h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 320" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(47.5,0)"><path class="ed mag draw" style="--d:0.43s" d="M470,78 L150,78"/><path class="ah" style="--d:0.55s" d="M161,84 L150,78 L161,72 z" fill="var(--mag)" stroke="none"/><text class="lb2 pop" style="--d:0.63s" x="310" y="64" text-anchor="middle">HTTP 400</text><path class="ed amb draw" style="--d:0.59s" d="M740,78 L470,78"/><path class="ah" style="--d:0.71s" d="M481,84 L470,78 L481,72 z" fill="var(--amb)" stroke="none"/><path class="ed grn draw" style="--d:0.75s" d="M990,78 L740,78"/><path class="ah" style="--d:0.87s" d="M751,84 L740,78 L751,72 z" fill="var(--grn)" stroke="none"/><path class="ed mag draw" style="--d:0.91s" d="M470,78 L470,250"/><path class="ah" style="--d:1.03s" d="M476,239 L470,250 L464,239 z" fill="var(--mag)" stroke="none"/><text class="lb2 pop" style="--d:1.11s" x="470" y="178" text-anchor="middle">stolen trigger token replays the deploy</text><rect class="nd pop" style="--d:0.15s" x="40" y="36" width="220" height="84" rx="7"/><g transform="translate(128.0,35.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.15s"><path d="M-9,8 h18 v-10 l-4,-6 h-10 l-4,6 z M-3,8 v-8 h5 v8 M2,-2 h6"/></g></g></g><text class="lb pop" style="--d:0.15s" x="150" y="100.25" text-anchor="middle">build job</text><text class="lb2 pop" style="--d:0.15s" x="150" y="116.75" text-anchor="middle">hook injected the implant</text><rect class="nd amb pop" style="--d:0.31s" x="370" y="36" width="200" height="84" rx="7"/><g transform="translate(448.0,35.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic amb pop" style="--d:0.31s"><path d="M0,-12 l10,4 v7 c0,6 -4,9 -10,12 c-6,-3 -10,-6 -10,-12 v-7 z"/></g></g></g><text class="lb amb pop" style="--d:0.31s" x="470" y="100.25" text-anchor="middle">manual deploy job</text><text class="lb2 amb pop" style="--d:0.31s" x="470" y="116.75" text-anchor="middle">status: manual</text><rect class="nd amb pop" style="--d:0.47s" x="660" y="36" width="160" height="84" rx="7"/><g transform="translate(718.0,43.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic amb pop" style="--d:0.47s"><path d="M-5,7 a7,7 0 0 1 -1,-14 a9,9 0 0 1 17,-2 a6,6 0 0 1 -1,16 z"/></g></g></g><text class="lb amb pop" style="--d:0.47s" x="740" y="108.5" text-anchor="middle">OTA server</text><rect class="nd grn pop" style="--d:0.63s" x="915" y="36" width="150" height="84" rx="7"/><g transform="translate(968.0,43.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic grn pop" style="--d:0.63s"><path d="M-6,-12 h12 v24 h-12 z M-2,9 h4"/></g></g></g><text class="lb grn pop" style="--d:0.63s" x="990" y="108.5" text-anchor="middle">device</text><rect class="nd mag pop" style="--d:0.79s" x="365" y="212" width="210" height="76" rx="7"/><g transform="translate(448.0,215.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.79s"><path d="M-9,-8 h18 v12 h-18 z M-13,8 h26 l-3,-4 h-20 z"/></g></g></g><text class="lb mag pop" style="--d:0.79s" x="470" y="280.5" text-anchor="middle">attacker laptop</text><text class="lb2 dim pop" style="--d:2.0s" x="895" y="150" text-anchor="middle">applies 1.4.3</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+<!-- ============ 25 · DEMO 5: THE DEVICE TAKES THE BAIT ============ -->
+<section class="slide demo-slide" data-part="ACT 3 · LIVE">
+  <div class="replay">replays: heist 5</div>
+  <div class="kicker"><span class="mag">Demo 5</span> · THE UPDATE APPLIES · ~3 min</div>
+  <h2>Every software signal <span class="acc">green</span></h2>
+  <div class="body">
+    <svg class="diag big" viewBox="0 0 1200 200" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(0.0,0)"><path class="ed amb draw" style="--d:0.43s" d="M600,90 L170,90"/><path class="ah" style="--d:0.55s" d="M181,96 L170,90 L181,84 z" fill="var(--amb)" stroke="none"/><path class="ed grn draw" style="--d:0.59s" d="M1030,90 L600,90"/><path class="ah" style="--d:0.71s" d="M611,96 L600,90 L611,84 z" fill="var(--grn)" stroke="none"/><rect class="nd pop" style="--d:0.15s" x="60" y="40" width="220" height="100" rx="7"/><g transform="translate(148.0,47.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.15s"><path d="M0,-10 a10,10 0 1 1 -.01,0 M0,0 v-6 M0,0 l4,3"/></g></g></g><text class="lb pop" style="--d:0.15s" x="170" y="112.25" text-anchor="middle">polls OTA</text><text class="lb2 pop" style="--d:0.15s" x="170" y="128.75" text-anchor="middle">every 30 s</text><rect class="nd amb pop" style="--d:0.31s" x="490" y="40" width="220" height="100" rx="7"/><g transform="translate(578.0,47.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic amb pop" style="--d:0.31s"><path d="M0,-12 l10,4 v7 c0,6 -4,9 -10,12 c-6,-3 -10,-6 -10,-12 v-7 z"/></g></g></g><text class="lb amb pop" style="--d:0.31s" x="600" y="112.25" text-anchor="middle">verify ed25519</text><text class="lb2 amb pop" style="--d:0.31s" x="600" y="128.75" text-anchor="middle">vendor key: OK</text><rect class="nd grn pop" style="--d:0.47s" x="920" y="40" width="220" height="100" rx="7"/><g transform="translate(1008.0,47.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic grn pop" style="--d:0.47s"><path d="M-8,-8 h16 v16 h-16 z M-12,-3 h4 M-12,3 h4 M8,-3 h4 M8,3 h4 M-3,-12 v4 M3,-12 v4 M-3,8 v4 M3,8 v4"/></g></g></g><text class="lb grn pop" style="--d:0.47s" x="1030" y="112.25" text-anchor="middle">applies 1.4.3</text><text class="lb2 grn pop" style="--d:0.47s" x="1030" y="128.75" text-anchor="middle">no user prompt</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    <div style="width:80%;margin:1vh auto">
+      <pre class="term ok"><span class="c"># device serial</span>
+<span class="good">[ota] applied 1.4.3: verify OK (ed25519, vendor key)</span>
+<span class="c"># no user prompt. no warning. a normal-looking update.</span></pre>
+    </div>
+  </div>
+  <aside class="notes">DEMO 5 (~3 min). Watch docker logs -f kit-virtual-device-1 until the apply line lands. Teaching beat: every software signal is green; the signature is genuinely valid. Bridge: so how would anyone notice? Fallback: recording slides/rec-fallback/demo5.mp4.</aside>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 28 · THE CTF: CONFUSED AT THE SOURCE ============ -->
+<section class="slide" data-part="ACT 3">
+  <div class="kicker"><span class="no">24</span>Act 3 · The take-home: Confused at the Source</div>
+  <h2>You just watched it. <span class="acc">Now play it.</span></h2>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><h3 class="green">P0 · Setup</h3><p class="dim">One stack up, one seed run: pipeline green, first release ships, the device applies it.</p><p class="dimmer a">15 min</p></div>
+      <div class="card"><h3 class="green">P1 · Recon</h3><p class="dim">Find the ONE line in <span class="cyan">.gitlab-ci.yml</span> that lets a public package win.</p><p class="dimmer a">20 min</p></div>
+      <div class="card"><h3 class="mag">P2 · Poison</h3><p class="dim">Arm the vendor's public HAL into a build hook: inject, exfiltrate, fire the deploy.</p><p class="dimmer a">45 min</p></div>
+      <div class="card"><h3 class="mag">P3 · Own</h3><p class="dim">The device applies your release. Signature valid. Beacon lands. Every signal green.</p><p class="dimmer a">15 min</p></div>
+      <div class="card"><h3 class="mag">P4 · Analyze</h3><p class="dim">Dump the flash: the implant bytes, the signature that covers them, the timeline.</p><p class="dimmer a">30 min</p></div>
+      <div class="card"><h3 class="green">P5 · Defend</h3><p class="dim">One fix, then re-run the attack unchanged: the pipeline must reject it.</p><p class="dimmer a">30 min</p></div>
+    </div>
+    <p class="dim a" style="margin-top:3vh">One laptop, Docker, ~2.5 h solo. Everything on <span class="cyan">127.0.0.1</span>: nothing leaves your machine. Flags are checked from artifacts by a grader script, not from claims. Optional ESP32 hardware tier, ~EUR 6.</p>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+<!-- ============ 29 · ACT 4 DIVIDER ============ -->
+<section class="slide bg-cctv divider" data-part="ACT 4">
+  <div class="body">
+    <div class="act-no glitch">ACT 4</div>
+    <h1>Read the flash</h1>
+    <p class="sub">Proving it after the fact: three witnesses, two fail.</p>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 30 · WITNESS 1: THE CONSOLE ============ -->
+<section class="slide" data-part="ACT 4">
+  <div class="kicker"><span class="no">26</span>Act 4 · Witness 1 fails: the console</div>
+  <h2>The console <span class="acc">lies</span></h2>
+  <div class="body twocol">
+    <ul class="b">
+      <li>Serial console: <span class="cyan">fw_ver 1.4.2</span>. Its flash holds 1.4.3 plus 60 extra bytes.</li>
+      <li>The console line is printed by the implanted image itself: the reporter and the implant share one flash.</li>
+    </ul>
+    <div>
+      <pre class="term"><span class="c"># the device, reporting itself</span>
+<span class="out">[serial] DoorBellino firmware 1.4.2</span>
+<span class="c"># the flash, telling the truth</span>
+<span class="warn">+ 60 bytes at the implant slot</span></pre>
+    </div>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 31 · WITNESS 2: THE SILICON ============ -->
+<section class="slide" data-part="ACT 4">
+  <div class="kicker"><span class="no">27</span>Act 4 · Witness 2: the silicon</div>
+  <h2>60 bytes, <span class="acc">inside the signed image</span></h2>
+  <div class="body">
+    <svg class="diag" viewBox="0 0 1200 380" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(20.0,0)"><path class="ed draw" style="--d:0.4s" d="M160,153 L160,50"/><path class="ah" style="--d:0.52s" d="M154,61 L160,50 L166,61 z" fill="#46514a" stroke="none"/><path class="ed draw" style="--d:0.6s" d="M160,285 L160,153"/><path class="ah" style="--d:0.72s" d="M154,164 L160,153 L166,164 z" fill="#46514a" stroke="none"/><path class="ed mag draw" style="--d:1.0s" d="M590,285 L160,285"/><path class="ah" style="--d:1.12s" d="M171,291 L160,285 L171,279 z" fill="var(--mag)" stroke="none"/><text class="lb2 pop" style="--d:1.2s" x="375" y="273" text-anchor="middle">same bytes</text><path class="ed amb draw" style="--d:0.85s" d="M295,263 C520,263 520,177 835,177"/><path class="ah" style="--d:0.97s" d="M823,173 L835,177 L825,185 z" fill="var(--amb)" stroke="none"/><text class="lb2 pop" style="--d:1.05s" x="565" y="206" text-anchor="middle">inside the signed image</text><path class="ed grn draw" style="--d:1.2s" d="M985,285 L985,153"/><path class="ah" style="--d:1.32s" d="M979,164 L985,153 L991,164 z" fill="var(--grn)" stroke="none"/><path class="ed mag draw" style="--d:1.35s" d="M985,285 C822,285 822,285 590,285"/><path class="ah" style="--d:1.47s" d="M601,291 L590,285 L601,279 z" fill="var(--mag)" stroke="none"/><text class="lb2 pop" style="--d:1.55s" x="788" y="301" text-anchor="middle">found here</text><rect class="nd pop" style="--d:0.1s" x="30" y="13" width="260" height="74" rx="7"/><g transform="translate(138.0,15.5)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.1s"><path d="M-8,-8 h16 v16 h-16 z M-12,-3 h4 M-12,3 h4 M8,-3 h4 M8,3 h4 M-3,-12 v4 M3,-12 v4 M-3,8 v4 M3,8 v4"/></g></g></g><text class="lb pop" style="--d:0.1s" x="160" y="80.5" text-anchor="middle">bootloader + otadata</text><rect class="nd grn pop" style="--d:0.3s" x="30" y="107" width="260" height="92" rx="7"/><g transform="translate(138.0,110.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic grn pop" style="--d:0.3s"><path d="M-6,-12 h12 v24 h-12 z M-2,9 h4"/></g></g></g><text class="lb grn pop" style="--d:0.3s" x="160" y="175.25" text-anchor="middle">bank A: running</text><text class="lb2 grn pop" style="--d:0.3s" x="160" y="191.75" text-anchor="middle">0x10000, 0x1F0000 long</text><rect class="nd pop" style="--d:0.5s" x="30" y="239" width="260" height="92" rx="7"/><g transform="translate(138.0,242.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic pop" style="--d:0.5s"><path d="M-6,-12 h12 v24 h-12 z M-2,9 h4"/></g></g></g><text class="lb pop" style="--d:0.5s" x="160" y="307.25" text-anchor="middle">bank B: staged update</text><text class="lb2 pop" style="--d:0.5s" x="160" y="323.75" text-anchor="middle">0x200000, 0x1F0000 long</text><rect class="nd mag pop" style="--d:0.95s" x="465" y="239" width="250" height="92" rx="7"/><g transform="translate(568.0,242.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic mag pop" style="--d:0.95s"><path d="M0,-8 a7,7 0 0 1 7,7 c0,4 -2,6 -2,9 h-10 c0,-3 -2,-5 -2,-9 a7,7 0 0 1 7,-7 M-5,0 h10 M-5,4 h10 M-4,-7 l-3,-4 M4,-7 l3,-4"/></g></g></g><text class="lb mag pop" style="--d:0.95s" x="590" y="307.25" text-anchor="middle">implant slot</text><text class="lb2 mag pop" style="--d:0.95s" x="590" y="323.75" text-anchor="middle">60 bytes at 0x1E0000</text><rect class="nd amb pop" style="--d:0.7s" x="840" y="107" width="290" height="92" rx="7"/><g transform="translate(963.0,110.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic amb pop" style="--d:0.7s"><path d="M-6,-11 h12 v9 a6,6 0 0 1 -12,0 z M-3,2 v10 l3,-3 3,3 v-10"/></g></g></g><text class="lb amb pop" style="--d:0.7s" x="985" y="175.25" text-anchor="middle">vendor signature</text><text class="lb2 amb pop" style="--d:0.7s" x="985" y="191.75" text-anchor="middle">covers the whole image</text><rect class="nd grn pop" style="--d:1.1s" x="840" y="239" width="290" height="92" rx="7"/><g transform="translate(963.0,242.25)"><rect class="ichip" x="0" y="0" width="44" height="44" rx="8"/><g transform="translate(22.0,22.0) scale(1.6)"><g class="ic grn pop" style="--d:1.1s"><path d="M-12,0 q12,-12 24,0 q-12,12 -24,0 z M0,-3 a3,3 0 1 1 .01,0"/></g></g></g><text class="lb grn pop" style="--d:1.1s" x="985" y="307.25" text-anchor="middle">flash-and-verify check</text><text class="lb2 grn pop" style="--d:1.1s" x="985" y="323.75" text-anchor="middle">dump, diff, report</text></g></svg>
+    <div style="width:82%;margin:0 auto"><pre class="term"><span class="p">$</span> xxd -s $((0x200000 + 0x1E0000)) -l 64 flash.img
+<span class="warn">IMPLANT|beacon-&gt;collector:9000|fw_ver_lie=1.4.2|int=30s|pad</span>
+<span class="c"># verification model: sha256 vs manifest, sig = last 64 bytes</span></pre></div>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 32 · WITNESS 3: THE WIRE ============ -->
+<section class="slide" data-part="ACT 4">
+  <div class="kicker"><span class="no">28</span>Act 4 · Witness 3: the wire</div>
+  <h2>The beacon, <span class="acc">on the wire</span></h2>
+  <div class="body twocol">
+    <ul class="b">
+      <li>Collector log: beacons landing, <span class="cyan">key_fpr: stolen-vendor-key</span>.</li>
+      <li>Silicon shows what was planted. The wire shows it running.</li>
+    </ul>
+    <div>
+      <pre class="term"><span class="p">$</span> curl -s http://collector:9000/log | tail -n1
+<span class="warn">{"kind": "beacon", "body": {"id": "DB-001", "fw_ver": "1.4.2", "key_fpr": "stolen-vendor-key"}}</span>
+<span class="c"># fw_ver comes from the implant's config bytes in flash.</span>
+<span class="c"># It is the LIE, echoed to the attacker's own server.</span></pre>
+    </div>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 33 · THE TIMELINE ============ -->
+<section class="slide" data-part="ACT 4">
+  <div class="kicker"><span class="no">29</span>Act 4 · The timeline, from artifacts only</div>
+  <h2>Five boxes, <span class="acc">zero console output</span></h2>
+  <div class="body">
+    <svg class="diag big" viewBox="0 0 1200 220" style="max-width:1200px;margin:0 auto;display:block"><g transform="translate(0.0,0)"><path class="ed draw" style="--d:0.47s" d="M235,100 L290,100"/><path class="ah" style="--d:0.59s" d="M279,94 L290,100 L279,106 z" fill="#46514a" stroke="none"/><path class="ed draw" style="--d:0.72s" d="M460,100 L515,100"/><path class="ah" style="--d:0.84s" d="M504,94 L515,100 L504,106 z" fill="#46514a" stroke="none"/><path class="ed draw" style="--d:0.97s" d="M685,100 L740,100"/><path class="ah" style="--d:1.09s" d="M729,94 L740,100 L729,106 z" fill="#46514a" stroke="none"/><path class="ed draw" style="--d:1.22s" d="M910,100 L965,100"/><path class="ah" style="--d:1.34s" d="M954,94 L965,100 L954,106 z" fill="#46514a" stroke="none"/><circle class="nd pop" style="--d:0.1s" cx="150" cy="100" r="80"/><text class="lb pop" style="--d:0.1s" x="150" y="106" text-anchor="middle">pip log</text><circle class="nd mag pop" style="--d:0.35s" cx="375" cy="100" r="80"/><text class="lb pop" style="--d:0.35s" x="375" y="106" text-anchor="middle">/loot</text><circle class="nd mag pop" style="--d:0.6s" cx="600" cy="100" r="80"/><text class="lb pop" style="--d:0.6s" x="600" y="106" text-anchor="middle">/history</text><circle class="nd pop" style="--d:0.85s" cx="825" cy="100" r="80"/><text class="lb pop" style="--d:0.85s" x="825" y="106" text-anchor="middle">apply line</text><circle class="nd mag hot pop" style="--d:1.1s" cx="1050" cy="100" r="80"/><text class="lb pop" style="--d:1.1s" x="1050" y="106" text-anchor="middle">beacon</text><text class="lb2 dim pop" style="--d:0.35s" x="150" y="205" text-anchor="middle">CI job output</text><text class="lb2 dim pop" style="--d:0.6s" x="375" y="205" text-anchor="middle">collector JSON</text><text class="lb2 dim pop" style="--d:0.85s" x="600" y="205" text-anchor="middle">OTA server log</text><text class="lb2 dim pop" style="--d:1.1s" x="825" y="205" text-anchor="middle">device log</text><text class="lb2 dim pop" style="--d:1.35s" x="1050" y="205" text-anchor="middle">the wire</text></g></svg>
+    
+    
+    
+    
+    
+    
+    
+    
+    <p style="margin-top:2vh;font-size:1.05em">All five artifacts survive after the device is unplugged.</p>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 34 · THE FIVE FIXES ============ -->
+<section class="slide" data-part="ACT 5">
+  <div class="kicker"><span class="no">30</span>Act 5 · What stops it</div>
+  <h2>The five fixes, <span class="acc">mapped to the heists</span></h2>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="tag-grn">kills heist 2</span><h3 class="green">Index pinning</h3><p class="dim">Allowlist internal names. The public index never gets asked.</p></div>
+      <div class="card"><span class="tag-grn">kills heists 1+3</span><h3 class="green">Runner egress filter</h3><p class="dim">The build talks to the package index. Nothing else.</p></div>
+      <div class="card"><span class="tag-grn">kills heist 4</span><h3 class="green">Provenance check</h3><p class="dim">Verify who built the artifact, not just who signed it.</p></div>
+    </div>
+    <div class="cards c2" style="margin-top:2vh">
+      <div class="card"><span class="tag-grn">kills the injection</span><h3 class="green">Test after install</h3><p class="dim">Assert the implant slot is zero after pip runs. Live proof: <span class="cyan">seed-pipeline-poison.sh</span> reorders the pipeline and it goes RED.</p></div>
+      <div class="card"><span class="tag-grn">the evidence</span><h3 class="green">Flash-and-verify release gate</h3><p class="dim">Dump the flash before the release ships. Monitor for a beacon that should not exist.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<!-- ============ 37 · SOURCES ============ -->
+<section class="slide" data-part="Sources">
+  <div class="kicker"><span class="no">31</span>Sources · verified quotes</div>
+  <h2>Every quote, <span class="acc">checked against the primary post</span></h2>
+  <div class="body" style="justify-content:flex-start">
+    <table class="sources">
+      <tr><th>Ref</th><th>Source</th><th>Verified quote</th></tr>
+      <tr><td class="ref">[2]</td><td class="src">OpenWrt advisory</td><td>"This results in the production of malicious firmware images signed with the legitimate build key."</td></tr>
+      <tr><td class="ref">[3]</td><td class="src">Red Hat CVE-2024-8105</td><td>"It is a firmware supply-chain issue that affects hundreds of device models in the UEFI ecosystem."</td></tr>
+      <tr><td class="ref">[6]</td><td class="src">Wiz, tj-actions</td><td>"A supply chain attack on popular GitHub Action tj-actions/changed-files caused many repositories to leak their secrets."</td></tr>
+      <tr><td class="ref">[8]</td><td class="src">Unit 42, Shai-Hulud</td><td>"...the novel, self-replicating worm as 'Shai-Hulud,' responsible for the compromise of hundreds of software packages."</td></tr>
+      <tr><td class="ref">[9]</td><td class="src">Kaspersky, ShadowHammer</td><td>"In January 2019, we discovered a sophisticated supply chain attack involving the ASUS Live Update Utility."</td></tr>
+      <tr><td class="ref">[11]</td><td class="src">ESPHome threat model</td><td>"Supply-chain attacks against ESPHome or its dependencies."</td></tr>
+      <tr><td class="ref">[12]</td><td class="src">GitHub, Octopus Scanner</td><td>"26 open source projects were backdoored by this malware and were actively serving backdoored code."</td></tr>
+      <tr><td class="ref">[13]</td><td class="src">Microsoft Threat Intelligence, May 2026</td><td>"The packages impersonate internal corporate packages across nine different organizational scopes using a dependency confusion technique..."</td></tr>
+      <tr><td class="ref">[14]</td><td class="src">CSA, May 2026</td><td>Mini Shai-Hulud: 373 malicious versions, 172 packages, valid SLSA Build L3 provenance.</td></tr>
+      <tr><td class="ref">[15]</td><td class="src">Elastic / Datadog, Aug 2026</td><td>CHAINDROP: keyv maintainer compromised, worm backdoors co-owned packages, 150M+ weekly downloads.</td></tr>
+      <tr><td class="ref">[16]</td><td class="src">Snyk / Aikido, Mar 2026</td><td>axios maintainer hijack: malicious 1.14.1 / 0.30.4, ~100M weekly downloads, hidden dep deploys a RAT.</td></tr>
+    </table>
+    <p class="dim" style="margin-top:1.5vh;font-size:.75em">ledger.json + briefing-sources/ on file. Quotes verified against the primary posts before deck use.</p>
+  </div>
+  <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
+</section>
+
+<script>
+(function(){
+  var all = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var bar = document.getElementById('progress');
+  var curIdx = -1;
+
+  // demo mode: ON by default (D toggles it off for a fast run-through).
+  // In demo mode the five LIVE demo slides are part of the flow and the
+  // footer shows a demo flag; in run-through mode they are skipped
+  // entirely so the story never breaks.
+  var demo = true;
+  function applyDemo(){
+    document.body.classList.toggle('demo', demo);
+    document.querySelectorAll('.demo-slide').forEach(function(s){
+      s.style.display = demo ? '' : 'none';
+    });
+    curIdx = -1; paint();
+  }
+  function visible(){
+    return demo ? all : all.filter(function(s){ return !s.classList.contains('demo-slide'); });
+  }
+  function curIndex(vis){
+    var el = vis.find(function(s){
+      var r = s.getBoundingClientRect();
+      return r.top > -window.innerHeight/2 && r.top <= window.innerHeight/2;
+    });
+    return el ? vis.indexOf(el) : 0;
+  }
+
+  // entrance animations replay on every visit
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting) en.target.classList.add('on');
+        else en.target.classList.remove('on');
+      });
+    }, {threshold:0.55});
+    all.forEach(function(s){ io.observe(s); });
+  } else {
+    all.forEach(function(s){ s.classList.add('on'); });
+  }
+
+  function paint(){
+    var vis = visible();
+    var i = curIndex(vis);
+    if (i === curIdx) return;
+    curIdx = i;
+    bar.style.width = (100 * (i + 1) / vis.length) + '%';
+    var s = vis[i];
+    var act = s ? (s.getAttribute('data-part') || '') : '';
+    var f = s ? s.querySelector('.foot') : null;
+    if (f){
+      var a = f.querySelector('.act'), p = f.querySelector('.page');
+      if (a) a.textContent = act;
+      if (p) p.textContent = (i + 1) + ' / ' + vis.length;
+    }
+  }
+  function go(dir){
+    var vis = visible();
+    var i = curIndex(vis);
+    var next = vis[Math.max(0, Math.min(vis.length - 1, i + dir))];
+    if (next) next.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  window.addEventListener('scroll', paint, {passive:true});
+  window.addEventListener('resize', paint);
+  window.addEventListener('keydown', function(e){
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    switch (e.key){
+      case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+        e.preventDefault(); go(1); break;
+      case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+        e.preventDefault(); go(-1); break;
+      case 'Home': e.preventDefault(); visible()[0].scrollIntoView({behavior:'smooth'}); break;
+      case 'End': e.preventDefault(); (function(v){ v[v.length-1].scrollIntoView({behavior:'smooth'}); })(visible()); break;
+      case 'd': case 'D': demo = !demo; applyDemo(); break;
+      case 'f': case 'F':
+        if (document.fullscreenElement) document.exitFullscreen();
+        else document.documentElement.requestFullscreen();
+        break;
+    }
+  });
+  applyDemo();
+})();
+</script>
+</body>
+</html>

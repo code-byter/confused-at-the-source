@@ -1,0 +1,64 @@
+# DoorBellino vendor pipeline — build, test, sign, deploy (manual gate).
+# The deploy stage is `when: manual`: in the honest world a human plays it.
+#
+# NOTE ON ORDER (this is the lab's core lesson, TECH-OTA.md §6): the
+# dependency is installed AFTER build+test, so whatever the dependency's
+# build hook writes into app_padded.bin lands between test and sign. The
+# vendor signature then covers the implant bytes: what gets signed is
+# whatever the image contains AT SIGN TIME, not what the tests passed.
+stages: [build, sign, deploy]
+
+variables:
+  INTERNAL_PYPI: http://devpi-internal:3141/root/doorbellino
+  # P1 FLAG: the public fallback. One line lets a higher public semver win.
+  EXTRA_INDEX_URL: http://devpi-public:3141/root/pub
+
+build:
+  stage: build
+  image: python:3.12-slim
+  script:
+    # lab-grade index trust (loopback-only devpi; HTTPS would be real-world)
+    - export PIP_TRUSTED_HOST="devpi-internal devpi-public"
+    # env (not config file) so pip's build-isolation subprocess inherits it
+    - export PIP_INDEX_URL="$INTERNAL_PYPI"
+    - export PIP_EXTRA_INDEX_URL="$EXTRA_INDEX_URL"
+    # The vendor builds FIRST, then installs its deps. The image exists at
+    # dependency-install time, so the malicious build_py hook's inject move
+    # fires in-pipeline (TECH-OTA §6: injection must land BEFORE sign so
+    # the signature covers the implant bytes).
+    - python build_fw.py
+    - export FW_IMAGE="$PWD/app_padded.bin"
+    # vendor release tests: run against the still-clean image (they pass
+    # here by design; moving this line AFTER pip is the defense demo:
+    # moving the test stage after pip makes a poisoned pipeline go red)
+    - python test_fw.py
+    # no isolation: the evil sdist's build_py hook must run in THIS env (it
+    # needs the runner's FW_IMAGE/COLLECTOR_URL/etc). Flag, not env var: pip
+    # has no env fallback for this option. slim ships no setuptools: the
+    # backend itself resolves through the (vulnerable) index config too.
+    - pip install setuptools --extra-index-url "$EXTRA_INDEX_URL"
+    - pip install --no-build-isolation --extra-index-url "$EXTRA_INDEX_URL" -r requirements.txt
+    - "cat dbg-hook.txt 2>/dev/null || echo 'dbg: nothing'"
+  artifacts:
+    paths: [app_padded.bin]
+    expire_in: 1 hour
+
+sign:
+  stage: sign
+  image: python:3.12-slim
+  script:
+    - export PIP_TRUSTED_HOST="devpi-internal devpi-public"
+    # pynacl: signed releases only exist on real PyPI — lab uses the bundled
+    # synthetic-sig fallback in sign_fw.py (same structure, lab-grade crypto)
+    - python sign_fw.py --key "$SIGNING_KEY" --pub "$SIGNING_PUB" app_padded.bin
+  artifacts:
+    paths: [firmware-signed.bin, manifest.json]
+    expire_in: 1 hour
+
+deploy:
+  stage: deploy
+  image: python:3.12-slim
+  when: manual          # THE GATE — the build hook plays this job itself
+  script:
+    - python ota_push.py --ota "$OTA_URL" --token "$OTA_PUSH_TOKEN" firmware-signed.bin manifest.json
+  environment: production

@@ -1,0 +1,39 @@
+menuconfig DOORBELLINO
+    bool "DoorBellino vendor firmware"
+    default y
+
+if DOORBELLINO
+
+config DOORBELLINO_VENDOR_PUB
+    string "Vendor ed25519 public key (PEM, device trust anchor)"
+    default "-----BEGIN PUBLIC KEY-----REPLACE-----END PUBLIC KEY-----"
+
+config DOORBELLINO_OTA_URL
+    string "OTA server base URL"
+    default "http://192.168.8.1:8080"
+
+config DOORBELLINO_COLLECTOR_URL
+    string "Beacon collector URL"
+    default "http://192.168.8.1:9000/beacon"
+
+config DOORBELLINO_OTA_POLL_S
+    int "OTA poll interval (seconds)"
+    default 30
+
+config DOORBELLINO_LED_GPIO
+    int "Status LED GPIO (-1 disables the demo blink)"
+    default 2
+
+config DOORBELLINO_WIFI_SSID
+    string "Lab WiFi SSID"
+    default "doorbellino-lab"
+
+config DOORBELLINO_WIFI_PASS
+    string "Lab WiFi password"
+    default "changeme-local-lab"
+
+config DOORBELLINO_BEACON_INTERVAL_S
+    int "Beacon interval (seconds)"
+    default 30
+
+endif

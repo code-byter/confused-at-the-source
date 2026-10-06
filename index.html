@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confused at the Source</title>
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8eaf0;--dim:#9aa3b2;--line:#2a2f3a;--grn:#3BAE35;--mag:#e14d8a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
+  .wrap{max-width:640px;padding:48px 32px;text-align:center}
+  h1{font-size:2.2em;margin:0 0 8px;letter-spacing:-.01em}
+  h1 .acc{color:var(--mag)}
+  .sub{color:var(--dim);margin:0 0 40px}
+  a.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:14px 0;text-decoration:none;color:var(--ink);text-align:left;transition:border-color .15s}
+  a.card:hover{border-color:var(--grn)}
+  .card b{display:block;font-size:1.1em;margin-bottom:4px}
+  .card b::before{content:"\25B8 ";color:var(--grn)}
+  .card span{color:var(--dim);font-size:.92em}
+  .foot{color:var(--dim);font-size:.85em;margin-top:36px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Confused at <span class="acc">the Source</span></h1>
+  <p class="sub">A firmware supply-chain attack CTF. Poison the vendor pipeline, ship the implant, prove it from the flash.</p>
+  <a class="card" href="slides/">
+    <b>The slides</b>
+    <span>Talk deck, 31 slides. Arrow keys or space to navigate.</span>
+  </a>
+  <a class="card" href="ctf-guide.html">
+    <b>The CTF guide</b>
+    <span>Player manual: the five phases, flags, troubleshooting. Single printable file.</span>
+  </a>
+  <div class="foot">Fictional vendor. Everything runs on localhost. No real registries are contacted.</div>
+</div>
+</body>
+</html>

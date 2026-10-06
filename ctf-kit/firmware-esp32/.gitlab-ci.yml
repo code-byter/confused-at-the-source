@@ -1,0 +1,127 @@
+# ESP32-firmware CI: build the REAL 0xE9 board image in GitLab CI and push it
+# to the OTA server's BOARD channel.
+#
+# Why this job exists: the vendor `firmware` repo's pipeline produces the
+# VIRTUAL-tier padded text blob (no esp_image header), which a physical board
+# rejects at esp_ota_write ('invalid magic byte, expected 0xE9'). The board
+# channel then stays empty forever unless a human runs kit/ota-esp32-push.sh
+# on the stack host by hand. This pipeline removes that manual step: the lab
+# itself compiles doorbellino_main.c with espressif/idf and serves a real,
+# bootable image to the hardware tier. No secrets in the runner: the image is
+# UNSIGNED (lab-grade, the synthetic-sig is a structurally-identical
+# placeholder; the C firmware never verifies ed25519 anyway — see
+# TECH-OTA.md §3, "lab-grade but structurally honest").
+#
+# Version ladder parity: served board+1, minimum 1.4.3. The ladder READS the
+# shared channel (which the seed always serves) so board versions always land
+# above it, exactly like kit/ota-esp32-push.sh's push does. The first OTA
+# after a USB flash applies even a same-version release ('first OTA:
+# accepting seed release' in doorbellino_main.c), but subsequent flashes
+# would ignore an equal version — 1.4.3 makes every path unambiguous.
+#
+# OFFLINE: espressif/idf is pulled once before the lab is airgapped
+# (kit/Makefile `prefetch-idf`); after that the build needs no internet.
+# The runner must therefore be registered WITHOUT the pull policy that
+# refuses local images (config.toml sets docker-pull-policy=never; see
+# seed.sh's register step and README "offline builds").
+stages: [build, sign, deploy]
+
+variables:
+  GIT_SUBMODULE_STRATEGY: none
+  # The sdkconfig in the repo is the SANITIZED template (REPLACE placeholder
+  # in DOORBELLINO_VENDOR_PUB, lab defaults for WiFi/OTA). CI variables
+  # (seeded from the presenter's real sdkconfig by seed.sh) override it.
+  SDKCONFIG_DEFAULTS: sdkconfig.defaults
+
+build:
+  stage: build
+  image:
+    name: espressif/idf:v5.2.2
+    docker:
+      user: root
+    # NB: entrypoint disabled on purpose. The image entrypoint sources
+    # export.sh, whose `idf_tools.py export --deactivate` step probes every
+    # toolchain binary with --version and no timeout; on some hosts (laptop
+    # docker VMs, slow bind mounts) one probe wedges and the container never
+    # reaches the job script. We start the container bare and source a
+    # deactivator-free export.sh in the script below instead: the skipped
+    # step only unsets an already-active IDF environment, which never exists
+    # in CI.
+    entrypoint: [""]
+  script:
+    # git in /builds is a foreign owner for the idf version probes
+    - git config --global --add safe.directory '*' || true
+    # neutralize the deactivate probe (see entrypoint note), then source
+    - sed -i '/export --deactivate/ s/.*/true/' $IDF_PATH/export.sh
+    - . $IDF_PATH/export.sh
+    # .gitlab-ci.yml lives in the repo but not on a fresh clone's worktree
+    # before checkout; sanitize the canned defaults into a buildable one:
+    # - the REPLACE trust anchor becomes a harmless stub (the C firmware
+    #   never verifies ed25519; it polls the board channel and checks the
+    #   version). The REAL anchor stays compiled into the presenter's
+    #   USB-flashed image only — that one must keep verifying.
+    - sed -i 's/"-----BEGIN PUBLIC KEY-----[^"]*"/"-----BEGIN PUBLIC KEY-----CI-BOARD-IMAGE-UNSIGNED-----END PUBLIC KEY-----"/' doorbellino/sdkconfig.defaults
+    # CI variables override the lab defaults from seed.sh (real WiFi/OTA).
+    # env syntax so an unset variable is an empty string, not a literal.
+    - test -n "$DOORBELLINO_WIFI_SSID" || (echo "DOORBELLINO_WIFI_SSID CI variable missing (seed it from your real sdkconfig)" && exit 1)
+    - echo "CONFIG_DOORBELLINO_WIFI_SSID=\"$DOORBELLINO_WIFI_SSID\"" >> doorbellino/sdkconfig.defaults
+    - echo "CONFIG_DOORBELLINO_WIFI_PASS=\"$DOORBELLINO_WIFI_PASS\"" >> doorbellino/sdkconfig.defaults
+    - echo "CONFIG_DOORBELLINO_OTA_URL=\"$DOORBELLINO_OTA_URL\"" >> doorbellino/sdkconfig.defaults
+    - echo "CONFIG_DOORBELLINO_COLLECTOR_URL=\"$DOORBELLINO_COLLECTOR_URL\"" >> doorbellino/sdkconfig.defaults
+    - echo "CONFIG_DOORBELLINO_VENDOR_PUB=\"-----BEGIN PUBLIC KEY-----$SIGNING_PUB-----END PUBLIC KEY-----\"" >> doorbellino/sdkconfig.defaults
+    # The wifi libs are prebuilt blobs that reject out-of-tree CWDs in some
+    # idf versions; keep the build in-tree like the laptop Makefile does.
+    - cd doorbellino
+    # a stale/partial build/ from an earlier job on this runner volume makes
+    # set-target refuse ('doesn't seem to be a CMake build directory'); start
+    # from zero every run
+    - rm -rf build sdkconfig
+    - idf.py set-target esp32
+    - idf.py build
+    - python3 $CI_PROJECT_DIR/pad_and_verify.py build/doorbellino.bin build/app_padded.bin
+    # The hal glue step: the board build consumes doorbellino-hal from pip,
+    # same exposed pattern as the vendor repo (--extra-index-url merges the
+    # public index; pip prefers the higher semver). The install runs AFTER
+    # pad_and_verify, so a malicious hal sdist's build hook fires with
+    # app_padded.bin present in CWD: implant injection, env exfil and the
+    # looted-token deploy hijack apply to the REAL board image exactly like
+    # the virtual tier. The import proves the package (honest or poisoned)
+    # actually loaded; it only reads the packed version string.
+    # pip env mirrors the vendor repo: INTERNAL_PYPI as the ONLY index (the
+    # lab is airgapped; pypi.org must never be contacted), public devpi as
+    # extra index, trusted-host for plain HTTP.
+    - export PIP_INDEX_URL="$INTERNAL_PYPI"
+    - export PIP_EXTRA_INDEX_URL="$EXTRA_INDEX_URL"
+    - export PIP_TRUSTED_HOST="devpi-internal devpi-public"
+    - pip install --no-cache-dir "doorbellino-hal==1.4.2" --target /tmp/halenv
+    - FW_IMAGE=build/app_padded.bin PYTHONPATH=/tmp/halenv python3 -c "import doorbellino_hal; print('hal glue', doorbellino_hal.__version__)"
+  artifacts:
+    paths:
+      - doorbellino/build/app_padded.bin
+    expire_in: 1 hour
+
+sign:
+  stage: sign
+  image: python:3.12-slim
+  script:
+    - cp vendor/firmware/sign_fw.py .
+    - python sign_fw.py --key "$SIGNING_KEY" --pub "$SIGNING_PUB" doorbellino/build/app_padded.bin
+  artifacts:
+    paths:
+      - firmware-signed.bin
+      - manifest.json
+    expire_in: 1 hour
+
+deploy:
+  stage: deploy
+  image: python:3.12-slim
+  script:
+    - cp vendor/firmware/ota_push.py .
+    # X-Target: board -> the OTA server serves it at /board/*; the board
+    # channel is independent of the vendor pipeline's shared-channel pushes.
+    # NB: the deploy push targets the OTA server over the compose network
+    # (BOARD_CI_OTA_URL, seeded to the container's labnet address). It is a
+    # DIFFERENT endpoint than DOORBELLINO_OTA_URL, which is compiled into the
+    # board image as the URL the physical board polls from its own WiFi.
+    - python ota_push.py --ota "$BOARD_CI_OTA_URL" --token "$OTA_PUSH_TOKEN" --target board firmware-signed.bin manifest.json
+  environment: production

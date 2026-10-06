@@ -1,0 +1,37 @@
+# lab secrets (generated per install by up.sh)
+ctf-kit/.env
+
+# runtime state (never commit lab identity or artifacts)
+ctf-kit/vendor/firmware/.git/
+ctf-kit/vendor/firmware/manifest.json
+ctf-kit/vendor/firmware/app_padded.bin
+ctf-kit/vendor/firmware/firmware-signed.bin
+ctf-kit/vendor/firmware/__pycache__/
+ctf-kit/services/*/data/
+*.img
+flash.img
+
+# offensive payload binaries: players generate their own
+implant.bin
+ctf-kit/instructor/
+
+# setuptools scratch
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# ESP-IDF (2 GB checkout: install.sh) + local board identity
+ctf-kit/firmware-esp32/esp-idf/
+ctf-kit/firmware-esp32/doorbellino/sdkconfig
+ctf-kit/firmware-esp32/doorbellino/sdkconfig.old
+ctf-kit/firmware-esp32/doorbellino/sdkconfig.broken
+ctf-kit/firmware-esp32/doorbellino/dependencies.lock
+ctf-kit/firmware-esp32/doorbellino/build/
+
+# editor / OS junk
+.vscode/
+.idea/
+.DS_Store

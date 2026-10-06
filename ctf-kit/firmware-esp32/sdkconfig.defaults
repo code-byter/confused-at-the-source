@@ -1,0 +1,14 @@
+# DoorBellino ESP32 firmware — Kconfig fragment
+# Vendor defaults; the seed sets per-run values.
+CONFIG_DOORBELLINO_VENDOR_PUB="-----BEGIN PUBLIC KEY-----<seeded>-----END PUBLIC KEY-----"
+CONFIG_DOORBELLINO_OTA_URL="http://192.168.8.1:8080"
+CONFIG_DOORBELLINO_COLLECTOR_URL="http://192.168.8.1:9000/beacon"
+CONFIG_DOORBELLINO_OTA_POLL_S=30
+CONFIG_DOORBELLINO_BEACON_INTERVAL_S=30
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+# rollback support (the safety mechanism the attack defeats)
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
+# mbedtls ed25519 for the manifest/image verify
+CONFIG_MBEDTLS_PK_PARSE_ED25519=y
