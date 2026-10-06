@@ -712,17 +712,26 @@
 <!-- ============ 28 · THE CTF: CONFUSED AT THE SOURCE ============ -->
 <section class="slide" data-part="ACT 3">
   <div class="kicker"><span class="no">24</span>Act 3 · The take-home: Confused at the Source</div>
-  <h2>You just watched it. <span class="acc">Now play it.</span></h2>
-  <div class="body">
+  <h2 style="font-size:.82em">You just watched it. <span class="acc">Now play it.</span></h2>
+  <div class="body" style="font-size:.86em">
     <div class="cards c3">
       <div class="card"><h3 class="green">P0 · Setup</h3><p class="dim">One stack up, one seed run: pipeline green, first release ships, the device applies it.</p><p class="dimmer a">15 min</p></div>
-      <div class="card"><h3 class="green">P1 · Recon</h3><p class="dim">Find the ONE line in <span class="cyan">.gitlab-ci.yml</span> that lets a public package win.</p><p class="dimmer a">20 min</p></div>
-      <div class="card"><h3 class="mag">P2 · Poison</h3><p class="dim">Arm the vendor's public HAL into a build hook: inject, exfiltrate, fire the deploy.</p><p class="dimmer a">45 min</p></div>
-      <div class="card"><h3 class="mag">P3 · Own</h3><p class="dim">The device applies your release. Signature valid. Beacon lands. Every signal green.</p><p class="dimmer a">15 min</p></div>
-      <div class="card"><h3 class="mag">P4 · Analyze</h3><p class="dim">Dump the flash: the implant bytes, the signature that covers them, the timeline.</p><p class="dimmer a">30 min</p></div>
-      <div class="card"><h3 class="green">P5 · Defend</h3><p class="dim">One fix, then re-run the attack unchanged: the pipeline must reject it.</p><p class="dimmer a">30 min</p></div>
+      <div class="card"><h3 class="green">P1 · Recon</h3><p class="dim">Find the ONE line in <span class="cyan">.gitlab-ci.yml</span> that lets the public index win.</p><p class="dimmer a">20 min</p></div>
+      <div class="card"><h3 class="mag">P2 · Poison</h3><p class="dim">Arm the public HAL into a build hook: inject, exfil, fire the deploy.</p><p class="dimmer a">45 min</p></div>
+      <div class="card"><h3 class="mag">P3 · Own</h3><p class="dim">Device applies your release. Signature valid. Beacon lands.</p><p class="dimmer a">15 min</p></div>
+      <div class="card"><h3 class="mag">P4 · Analyze</h3><p class="dim">Dump the flash: implant bytes, the signature covering them, the timeline.</p><p class="dimmer a">30 min</p></div>
+      <div class="card"><h3 class="green">P5 · Defend</h3><p class="dim">One fix, re-run the attack: the pipeline must reject it.</p><p class="dimmer a">30 min</p></div>
     </div>
-    <p class="dim a" style="margin-top:3vh">One laptop, Docker, ~2.5 h solo. Everything on <span class="cyan">127.0.0.1</span>: nothing leaves your machine. Flags are checked from artifacts by a grader script, not from claims. Optional ESP32 hardware tier, ~EUR 6.</p>
+    <div style="display:flex;gap:2vw;align-items:center;margin-top:2vh">
+      <p class="dim a" style="flex:1;font-size:.78em;margin:0">One laptop, Docker, ~2.5 h solo. Everything on <span class="cyan">127.0.0.1</span>: nothing leaves your machine. Flags checked from artifacts, not claims. Optional ESP32 tier, ~EUR 6.</p>
+      <div style="display:flex;gap:1.2vw;align-items:center;flex:0 0 auto">
+        <img class="qrbox" style="width:11vh;height:11vh;padding:5px" src="assets/qr-confused-at-the-source.svg" alt="QR: github.com/code-byter/ekoparty-2026-firmware-supplychain">
+        <div>
+          <p class="dim" style="font-size:.72em;white-space:nowrap;margin:0">Scan to get the lab:</p>
+          <p class="green" style="font-size:.72em;white-space:nowrap;margin:.3vh 0 0">github.com/code-byter/<br>ekoparty-2026-firmware-supplychain</p>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="foot"><span class="act"></span><span class="demo-flag">● demo mode</span><span class="page"></span></div>
 </section>
